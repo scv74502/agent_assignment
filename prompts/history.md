@@ -79,6 +79,34 @@ e722522 [feat] 조회 API 구현
 
 ---
 
+### 17:54 (UTC+9) - 데이터 초기화 구현
+**요청**: "Implement the following plan: # 데이터 초기화 구현 계획 ..."
+**작업**:
+- InitializerProperties: 초기화 설정 클래스 (enabled, 엔티티 수량, 배치 크기)
+- DataTokens: 토큰 목록 (학과명 12개, 성씨 20개, 이름글자 40개, 강좌 접두사/유형, 건물명, 시간대)
+- Generator 클래스: ProfessorGenerator, StudentGenerator, CourseGenerator, ScheduleGenerator
+- BatchInsertExecutor: JDBC batchUpdate 기반 배치 삽입 (배치 크기 1000)
+- DataInitializer: ApplicationRunner 구현, @Profile("local", "dev"), 중복 실행 방지
+- application-local.yml: initializer 설정 추가, rewriteBatchedStatements=true
+
+**생성 파일**:
+```
+src/main/kotlin/org/example/msstest/initializer/
+├── InitializerProperties.kt
+├── DataTokens.kt
+├── BatchInsertExecutor.kt
+├── DataInitializer.kt
+└── generator/
+    ├── ProfessorGenerator.kt
+    ├── StudentGenerator.kt
+    ├── CourseGenerator.kt
+    └── ScheduleGenerator.kt
+```
+
+**데이터 규모**: 교수 100명, 강좌 500개, 학생 10,000명, 학과 12개
+
+---
+
 ## 이전 기록 (시간 미상)
 
 1. **요청**: "healthCheck.md로 엔드포인트 인터페이스 구조 제시 및 초기 동작 테스트"

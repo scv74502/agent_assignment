@@ -1,7 +1,6 @@
 package org.example.msstest.domain.vo
 
-@JvmInline
-value class CourseCode(val value: String) {
+data class CourseCode(val value: String) {
     init {
         require(value.matches(PATTERN)) { "과목코드 형식이 올바르지 않습니다: $value" }
     }

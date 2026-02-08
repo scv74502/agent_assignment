@@ -1,7 +1,6 @@
 package org.example.msstest.domain.vo
 
-@JvmInline
-value class ProfessorNo(val value: String) {
+data class ProfessorNo(val value: String) {
     init {
         require(value.matches(PATTERN)) { "교수번호 형식이 올바르지 않습니다: $value" }
     }
