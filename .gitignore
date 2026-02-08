@@ -44,5 +44,10 @@ out/
 .env.*
 !.env.*.example
 
+### Claude
+/.claude
+
 ### specify ###
+/.specify
 /mss_specify
+/specs

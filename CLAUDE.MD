@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+**모든 AI Agent를 통한 작업 내역을 **/Users/kwp/Desktop/stress-test/mss_test/prompts/history.md**에 기록할 것**
+
 ## 정보
 - kotlin + mysql + redis 활용한 수강신청 관련 API
 - ktlint를 통해 코드의 품질을 관리
@@ -44,3 +46,10 @@
 - 네이밍: `feature/<이슈번호>-<간단한설명>`
 - 예시: `feature/1-multi-module-setup`
 - main 브랜치에 직접 push하지 않는다
+
+## Active Technologies
+- Kotlin 1.9.25 + Java 21 + Spring Boot 3.5.10, Spring Data JPA, Spring Security + JWT, SpringDoc OpenAPI (001-course-registration)
+- MySQL (영속 데이터), Redis (분산 락 + 대기열) (001-course-registration)
+
+## Recent Changes
+- 001-course-registration: Added Kotlin 1.9.25 + Java 21 + Spring Boot 3.5.10, Spring Data JPA, Spring Security + JWT, SpringDoc OpenAPI
