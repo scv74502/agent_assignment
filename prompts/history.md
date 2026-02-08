@@ -153,3 +153,21 @@ src/main/kotlin/org/example/msstest/initializer/
     - Phase 4: DTO 패턴 일관성 (Request DTO 생성)
     - Phase 5: 설정 파일 최적화 (환경별 분리)
     - Phase 6: 테스트 커버리지 확대 (Controller/Repository 테스트)
+
+---
+
+### 17:56 (UTC+9) - VO 클래스 JPA 호환성 수정
+**요청**: "현재까지 작업 검증하기 위해 메인 애플리케이션과 테스트 수행하고 결과 알려주고"
+**문제 발견**:
+- `@JvmInline value class`와 JPA AttributeConverter 간 ClassCastException 발생
+- ProfessorNoConverter에서 타입 변환 실패
+
+**해결**:
+- VO 클래스들의 `@JvmInline value class`를 `data class`로 변경
+  - ProfessorNo, StudentNo, CourseCode, Credits
+
+**검증**:
+- 메인 애플리케이션 정상 구동 확인
+- `/health` → 200 OK
+- `/api/v1/students` → 200 OK (데이터 반환)
+- `/api/v1/courses` → 200 OK (데이터 반환)
