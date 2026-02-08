@@ -12,7 +12,7 @@ import org.example.msstest.service.EnrollmentService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.whenever
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
@@ -42,7 +42,7 @@ class EnrollmentControllerTest {
     private lateinit var enrollmentService: EnrollmentService
 
     @Nested
-    @DisplayName("POST /api/enrollments")
+    @DisplayName("POST /api/v1/enrollments")
     inner class Enroll {
         @Test
         @WithMockUser
@@ -55,13 +55,16 @@ class EnrollmentControllerTest {
                 studentName = "홍길동",
                 courseId = 1L,
                 courseName = "자료구조",
+                courseCode = "CS101",
+                credits = 3,
+                professorName = "김교수",
                 status = EnrollmentStatus.ENROLLED,
                 enrolledAt = LocalDateTime.now(),
             )
-            whenever(enrollmentService.enroll(1L, 1L)).thenReturn(response)
+            `when`(enrollmentService.enroll(1L, 1L)).thenReturn(response)
 
             mockMvc.perform(
-                post("/api/enrollments")
+                post("/api/v1/enrollments")
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)),
@@ -77,11 +80,11 @@ class EnrollmentControllerTest {
         @DisplayName("중복 수강신청 시 409 반환")
         fun enroll_alreadyEnrolled() {
             val request = EnrollmentRequest(studentId = 1L, courseId = 1L)
-            whenever(enrollmentService.enroll(1L, 1L))
+            `when`(enrollmentService.enroll(1L, 1L))
                 .thenThrow(EnrollmentException.AlreadyEnrolled(1L, 1L))
 
             mockMvc.perform(
-                post("/api/enrollments")
+                post("/api/v1/enrollments")
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)),
@@ -92,7 +95,7 @@ class EnrollmentControllerTest {
     }
 
     @Nested
-    @DisplayName("DELETE /api/enrollments")
+    @DisplayName("DELETE /api/v1/enrollments")
     inner class Cancel {
         @Test
         @WithMockUser
@@ -105,13 +108,16 @@ class EnrollmentControllerTest {
                 studentName = "홍길동",
                 courseId = 1L,
                 courseName = "자료구조",
+                courseCode = "CS101",
+                credits = 3,
+                professorName = "김교수",
                 status = EnrollmentStatus.CANCELLED,
                 enrolledAt = LocalDateTime.now(),
             )
-            whenever(enrollmentService.cancel(1L, 1L)).thenReturn(response)
+            `when`(enrollmentService.cancel(1L, 1L)).thenReturn(response)
 
             mockMvc.perform(
-                delete("/api/enrollments")
+                delete("/api/v1/enrollments")
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)),
@@ -122,7 +128,7 @@ class EnrollmentControllerTest {
     }
 
     @Nested
-    @DisplayName("GET /api/enrollments/students/{studentId}")
+    @DisplayName("GET /api/v1/enrollments/students/{studentId}")
     inner class GetEnrollmentsByStudent {
         @Test
         @WithMockUser
@@ -135,13 +141,16 @@ class EnrollmentControllerTest {
                     studentName = "홍길동",
                     courseId = 1L,
                     courseName = "자료구조",
+                    courseCode = "CS101",
+                    credits = 3,
+                    professorName = "김교수",
                     status = EnrollmentStatus.ENROLLED,
                     enrolledAt = LocalDateTime.now(),
                 ),
             )
-            whenever(enrollmentService.getEnrollmentsByStudent(1L)).thenReturn(responses)
+            `when`(enrollmentService.getEnrollmentsByStudent(1L)).thenReturn(responses)
 
-            mockMvc.perform(get("/api/enrollments/students/1"))
+            mockMvc.perform(get("/api/v1/enrollments/students/1"))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].studentId").value(1))
@@ -151,10 +160,10 @@ class EnrollmentControllerTest {
         @WithMockUser
         @DisplayName("존재하지 않는 학생 조회 시 404 반환")
         fun getEnrollmentsByStudent_studentNotFound() {
-            whenever(enrollmentService.getEnrollmentsByStudent(999L))
+            `when`(enrollmentService.getEnrollmentsByStudent(999L))
                 .thenThrow(StudentException.NotFound(999L))
 
-            mockMvc.perform(get("/api/enrollments/students/999"))
+            mockMvc.perform(get("/api/v1/enrollments/students/999"))
                 .andExpect(status().isNotFound)
                 .andExpect(jsonPath("$.code").value("S001"))
         }

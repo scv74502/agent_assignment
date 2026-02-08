@@ -2,7 +2,7 @@
 
 ## 기록 관리
 **모든 AI Agent를 통한 작업 내역을 **/Users/kwp/Desktop/stress-test/mss_test/prompts/history.md**에 기록할 것**
-- 시간순, 작업 순으로 관리
+- 시간순, 작업 순으로 관리(ex. history-2602081736.md)
 - 에이전트한테 보낸 요청과 작업 내용 요약을 모두 명시
 ### 허용되는 형식
 ```markdown
