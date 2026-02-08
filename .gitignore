@@ -43,3 +43,6 @@ out/
 .env
 .env.*
 !.env.*.example
+
+### specify ###
+/mss_specify
