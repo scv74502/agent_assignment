@@ -1,0 +1,714 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "Musinsa Test API",
+    "description" : "수강신청 API.",
+    "version" : "v1.0.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost",
+    "description" : "Generated server url"
+  } ],
+  "tags" : [ {
+    "name" : "Course",
+    "description" : "강좌 API"
+  }, {
+    "name" : "Timetable",
+    "description" : "시간표 API"
+  }, {
+    "name" : "Enrollment",
+    "description" : "수강신청 API"
+  }, {
+    "name" : "Professor",
+    "description" : "교수 API"
+  }, {
+    "name" : "Student",
+    "description" : "학생 API"
+  } ],
+  "paths" : {
+    "/api/v1/enrollments" : {
+      "post" : {
+        "tags" : [ "Enrollment" ],
+        "summary" : "수강신청",
+        "description" : "학생이 강좌에 수강신청합니다",
+        "operationId" : "enroll",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/EnrollmentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "수강신청 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EnrollmentResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "최대 학점 초과",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "학생 또는 강좌를 찾을 수 없음",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "이미 수강신청함 / 정원 초과 / 시간표 중복",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Enrollment" ],
+        "summary" : "수강취소",
+        "description" : "학생이 강좌 수강신청을 취소합니다",
+        "operationId" : "cancel",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CancelEnrollmentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "수강취소 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EnrollmentResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "수강신청 내역을 찾을 수 없음",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health" : {
+      "get" : {
+        "tags" : [ "health-check-controller" ],
+        "summary" : "헬스체크",
+        "description" : "api 구동 여부 체크하는 기본 엔드포인트",
+        "operationId" : "health",
+        "responses" : {
+          "200" : {
+            "description" : "서버가 성공적으로 구동되었습니다."
+          }
+        }
+      }
+    },
+    "/api/v1/timetables/students/{studentId}" : {
+      "get" : {
+        "tags" : [ "Timetable" ],
+        "summary" : "학생 시간표 조회",
+        "description" : "특정 학생의 시간표를 조회합니다",
+        "operationId" : "getTimetable",
+        "parameters" : [ {
+          "name" : "studentId",
+          "in" : "path",
+          "description" : "학생 ID",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TimetableResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "학생을 찾을 수 없음",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/students" : {
+      "get" : {
+        "tags" : [ "Student" ],
+        "summary" : "학생 상세 조회 (학번)",
+        "description" : "학번으로 특정 학생의 정보를 조회합니다",
+        "operationId" : "getAllStudents",
+        "parameters" : [ {
+          "name" : "studentNo",
+          "in" : "query",
+          "description" : "학번",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StudentResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "학생을 찾을 수 없음",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/students/{studentId}" : {
+      "get" : {
+        "tags" : [ "Student" ],
+        "summary" : "학생 상세 조회 (ID)",
+        "description" : "ID로 특정 학생의 정보를 조회합니다",
+        "operationId" : "getStudentById",
+        "parameters" : [ {
+          "name" : "studentId",
+          "in" : "path",
+          "description" : "학생 ID",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StudentResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "학생을 찾을 수 없음",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/professors" : {
+      "get" : {
+        "tags" : [ "Professor" ],
+        "summary" : "학과별 교수 조회",
+        "description" : "특정 학과의 교수 목록을 조회합니다",
+        "operationId" : "getAllProfessors",
+        "parameters" : [ {
+          "name" : "department",
+          "in" : "query",
+          "description" : "학과명",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProfessorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/professors/{professorId}" : {
+      "get" : {
+        "tags" : [ "Professor" ],
+        "summary" : "교수 상세 조회",
+        "description" : "특정 교수의 정보를 조회합니다",
+        "operationId" : "getProfessorById",
+        "parameters" : [ {
+          "name" : "professorId",
+          "in" : "path",
+          "description" : "교수 ID",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProfessorResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "교수를 찾을 수 없음",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/enrollments/students/{studentId}" : {
+      "get" : {
+        "tags" : [ "Enrollment" ],
+        "summary" : "학생별 수강신청 내역 조회",
+        "description" : "특정 학생의 수강신청 내역을 조회합니다",
+        "operationId" : "getEnrollmentsByStudent",
+        "parameters" : [ {
+          "name" : "studentId",
+          "in" : "path",
+          "description" : "학생 ID",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EnrollmentResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "학생을 찾을 수 없음",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses" : {
+      "get" : {
+        "tags" : [ "Course" ],
+        "summary" : "교수별 강좌 조회",
+        "description" : "특정 교수가 담당하는 강좌 목록을 조회합니다",
+        "operationId" : "getAllCourses",
+        "parameters" : [ {
+          "name" : "professorId",
+          "in" : "query",
+          "description" : "교수 ID",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{courseId}" : {
+      "get" : {
+        "tags" : [ "Course" ],
+        "summary" : "강좌 상세 조회",
+        "description" : "특정 강좌의 상세 정보를 조회합니다",
+        "operationId" : "getCourseById",
+        "parameters" : [ {
+          "name" : "courseId",
+          "in" : "path",
+          "description" : "강좌 ID",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "강좌를 찾을 수 없음",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/courses/available" : {
+      "get" : {
+        "tags" : [ "Course" ],
+        "summary" : "수강 가능 강좌 조회",
+        "description" : "정원이 남아있는 강좌 목록을 조회합니다",
+        "operationId" : "getAvailableCourses",
+        "responses" : {
+          "200" : {
+            "description" : "조회 성공",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "EnrollmentRequest" : {
+        "type" : "object",
+        "properties" : {
+          "studentId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "courseId" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "courseId", "studentId" ]
+      },
+      "EnrollmentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "studentId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "studentName" : {
+            "type" : "string"
+          },
+          "courseId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "courseName" : {
+            "type" : "string"
+          },
+          "courseCode" : {
+            "type" : "string"
+          },
+          "credits" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "professorName" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "ENROLLED", "CANCELLED" ]
+          },
+          "enrolledAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "required" : [ "courseCode", "courseId", "courseName", "credits", "enrolledAt", "id", "professorName", "status", "studentId", "studentName" ]
+      },
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "required" : [ "code", "message", "timestamp" ]
+      },
+      "TimetableEntry" : {
+        "type" : "object",
+        "properties" : {
+          "courseId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "courseCode" : {
+            "type" : "string"
+          },
+          "courseName" : {
+            "type" : "string"
+          },
+          "professorName" : {
+            "type" : "string"
+          },
+          "dayOfWeek" : {
+            "type" : "string",
+            "enum" : [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
+          },
+          "startTime" : {
+            "type" : "string"
+          },
+          "endTime" : {
+            "type" : "string"
+          },
+          "location" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "courseCode", "courseId", "courseName", "dayOfWeek", "endTime", "location", "professorName", "startTime" ]
+      },
+      "TimetableResponse" : {
+        "type" : "object",
+        "properties" : {
+          "studentId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalCredits" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "entries" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TimetableEntry"
+            }
+          }
+        },
+        "required" : [ "entries", "studentId", "totalCredits" ]
+      },
+      "StudentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "studentNo" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "department" : {
+            "type" : "string"
+          },
+          "grade" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "department", "grade", "id", "name", "studentNo" ]
+      },
+      "ProfessorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "professorNo" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "department" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "department", "id", "name", "professorNo" ]
+      },
+      "CourseResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "courseCode" : {
+            "type" : "string"
+          },
+          "courseName" : {
+            "type" : "string"
+          },
+          "credits" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "capacity" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "currentEnrollment" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "remainingCapacity" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "professorId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "professorName" : {
+            "type" : "string"
+          },
+          "schedule" : {
+            "type" : "string"
+          },
+          "schedules" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ScheduleResponse"
+            }
+          }
+        },
+        "required" : [ "capacity", "courseCode", "courseName", "credits", "currentEnrollment", "id", "professorId", "professorName", "remainingCapacity", "schedule", "schedules" ]
+      },
+      "ScheduleResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "dayOfWeek" : {
+            "type" : "string",
+            "enum" : [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
+          },
+          "startTime" : {
+            "type" : "string"
+          },
+          "endTime" : {
+            "type" : "string"
+          },
+          "location" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "dayOfWeek", "endTime", "id", "location", "startTime" ]
+      },
+      "CancelEnrollmentRequest" : {
+        "type" : "object",
+        "properties" : {
+          "studentId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "courseId" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "courseId", "studentId" ]
+      }
+    }
+  }
+}

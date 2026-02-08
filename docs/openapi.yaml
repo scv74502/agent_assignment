@@ -1,0 +1,422 @@
+openapi: 3.0.3
+info:
+  title: 수강신청 시스템 API
+  description: 고성능 수강신청 시스템 - 동시성 제어를 통한 정원 초과 방지
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Students
+    description: 학생 관련 API
+  - name: Professors
+    description: 교수 관련 API
+  - name: Courses
+    description: 강좌 관련 API
+  - name: Enrollments
+    description: 수강신청 관련 API
+
+paths:
+  /api/students:
+    get:
+      tags:
+        - Students
+      summary: 학생 목록 조회
+      operationId: getStudents
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/students/{studentId}/timetable:
+    get:
+      tags:
+        - Students
+      summary: 내 시간표 조회
+      operationId: getStudentTimetable
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimetableResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/professors:
+    get:
+      tags:
+        - Professors
+      summary: 교수 목록 조회
+      operationId: getProfessors
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfessorResponse'
+
+  /api/courses:
+    get:
+      tags:
+        - Courses
+      summary: 강좌 목록 조회
+      operationId: getCourses
+      parameters:
+        - name: department
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 학과별 필터링 (추후 구현)
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseResponse'
+
+  /api/enrollment:
+    post:
+      tags:
+        - Enrollments
+      summary: 수강신청
+      operationId: enroll
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentRequest'
+      responses:
+        '201':
+          description: 신청 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentResponse'
+        '400':
+          description: 잘못된 요청 (학점 초과 등)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: 충돌 (정원 초과, 시간 중복, 중복 신청)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Enrollments
+      summary: 수강취소
+      operationId: cancelEnrollment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentRequest'
+      responses:
+        '200':
+          description: 취소 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentCancelResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: 신청 내역 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    StudentResponse:
+      type: object
+      required:
+        - id
+        - studentNo
+        - name
+        - department
+        - totalCredits
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        studentNo:
+          type: string
+          example: "20210001"
+        name:
+          type: string
+          example: "홍길동"
+        department:
+          type: string
+          example: "컴퓨터공학과"
+        totalCredits:
+          type: integer
+          example: 15
+          description: 현재 학기 신청 학점 합계
+
+    ProfessorResponse:
+      type: object
+      required:
+        - id
+        - name
+        - department
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "김교수"
+        department:
+          type: string
+          example: "컴퓨터공학과"
+
+    CourseResponse:
+      type: object
+      required:
+        - id
+        - name
+        - professorName
+        - credits
+        - capacity
+        - currentCount
+        - schedule
+        - schedules
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "자료구조"
+        professorName:
+          type: string
+          example: "김교수"
+        credits:
+          type: integer
+          example: 3
+        capacity:
+          type: integer
+          example: 30
+          description: 정원
+        currentCount:
+          type: integer
+          example: 25
+          description: 현재 신청 인원
+        schedule:
+          type: string
+          example: "월 09:00~10:30, 수 09:00~10:30"
+          description: 강의 시간(요일순, 시간순 문자열)
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleResponse'
+
+    ScheduleResponse:
+      type: object
+      required:
+        - dayOfWeek
+        - startTime
+        - endTime
+      properties:
+        dayOfWeek:
+          type: string
+          enum: [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY]
+          example: "MONDAY"
+        startTime:
+          type: string
+          format: time
+          example: "10:00"
+        endTime:
+          type: string
+          format: time
+          example: "11:30"
+
+    TimetableResponse:
+      type: object
+      required:
+        - studentId
+        - totalCredits
+        - courses
+      properties:
+        studentId:
+          type: integer
+          format: int64
+          example: 1
+        totalCredits:
+          type: integer
+          example: 15
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseResponse'
+
+    EnrollmentRequest:
+      type: object
+      required:
+        - studentId
+        - courseId
+      properties:
+        studentId:
+          type: integer
+          format: int64
+          example: 1
+        courseId:
+          type: integer
+          format: int64
+          example: 1
+
+    EnrollmentResponse:
+      type: object
+      required:
+        - id
+        - studentId
+        - courseId
+        - courseName
+        - credits
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        studentId:
+          type: integer
+          format: int64
+          example: 1
+        courseId:
+          type: integer
+          format: int64
+          example: 1
+        courseName:
+          type: string
+          example: "자료구조"
+        credits:
+          type: integer
+          example: 3
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-02-08T10:30:00"
+
+    EnrollmentCancelResponse:
+      type: object
+      required:
+        - message
+        - courseId
+        - courseName
+      properties:
+        message:
+          type: string
+          example: "수강취소가 완료되었습니다"
+        courseId:
+          type: integer
+          format: int64
+          example: 1
+        courseName:
+          type: string
+          example: "자료구조"
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "E001"
+        message:
+          type: string
+          example: "정원이 초과되었습니다"
+        details:
+          type: object
+          additionalProperties: true
+
+  responses:
+    Unauthorized:
+      description: 인증 필요
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "E401"
+            message: "인증이 필요합니다"
+
+    Forbidden:
+      description: 권한 없음
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "E403"
+            message: "접근 권한이 없습니다"
+
+    NotFound:
+      description: 리소스를 찾을 수 없음
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "E404"
+            message: "요청한 리소스를 찾을 수 없습니다"
