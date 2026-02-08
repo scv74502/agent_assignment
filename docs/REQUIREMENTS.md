@@ -132,13 +132,14 @@ data class CourseSchedule(
 
 #### Value Object 구현
 ```kotlin
-@JvmInline
-value class Credits(val value: Int) {
+data class Credits(val value: Int) {
     init {
         require(value in 1..6) { "학점은 1~6 범위여야 합니다: $value" }
     }
 }
 ```
+
+> **Note**: JPA AttributeConverter와의 호환성을 위해 `@JvmInline value class` 대신 `data class`를 사용합니다.
 
 #### 학점별 일반적 수업 시간
 | 학점 | 주당 수업 시간 | 예시 |
