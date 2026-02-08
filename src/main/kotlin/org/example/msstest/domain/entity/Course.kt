@@ -2,6 +2,7 @@ package org.example.msstest.domain.entity
 
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -12,6 +13,10 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.persistence.Version
+import org.example.msstest.domain.vo.CourseCode
+import org.example.msstest.domain.vo.Credits
+import org.example.msstest.domain.vo.converter.CourseCodeConverter
+import org.example.msstest.domain.vo.converter.CreditsConverter
 
 @Entity
 @Table(name = "courses")
@@ -20,11 +25,13 @@ class Course(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
     @Column(nullable = false, unique = true, length = 10)
-    val courseCode: String,
+    @Convert(converter = CourseCodeConverter::class)
+    val courseCode: CourseCode,
     @Column(nullable = false, length = 100)
     val courseName: String,
     @Column(nullable = false)
-    val credits: Int,
+    @Convert(converter = CreditsConverter::class)
+    val credits: Credits,
     @Column(nullable = false)
     val capacity: Int,
     @Column(nullable = false)
@@ -65,9 +72,9 @@ class Course(
             professor: Professor,
         ): Course =
             Course(
-                courseCode = courseCode,
+                courseCode = CourseCode(courseCode),
                 courseName = courseName,
-                credits = credits,
+                credits = Credits(credits),
                 capacity = capacity,
                 professor = professor,
             )

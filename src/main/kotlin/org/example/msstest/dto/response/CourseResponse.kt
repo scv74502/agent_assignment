@@ -45,9 +45,9 @@ data class CourseResponse(
         fun from(course: Course): CourseResponse =
             CourseResponse(
                 id = course.id,
-                courseCode = course.courseCode,
+                courseCode = course.courseCode.value,
                 courseName = course.courseName,
-                credits = course.credits,
+                credits = course.credits.value,
                 capacity = course.capacity,
                 currentEnrollment = course.currentEnrollment,
                 remainingCapacity = course.remainingCapacity,

@@ -5,7 +5,10 @@ import org.example.msstest.domain.entity.CourseSchedule
 import org.example.msstest.domain.entity.Enrollment
 import org.example.msstest.domain.entity.EnrollmentStatus
 import org.example.msstest.dto.response.EnrollmentResponse
+import org.example.msstest.exception.CourseException
 import org.example.msstest.exception.EnrollmentException
+import org.example.msstest.exception.LockException
+import org.example.msstest.exception.StudentException
 import org.example.msstest.lock.RedisLockService
 import org.example.msstest.queue.EnrollmentQueueService
 import org.example.msstest.repository.CourseRepository
@@ -36,17 +39,17 @@ class EnrollmentService(
     ): EnrollmentResponse {
         val student =
             studentRepository.findById(studentId)
-                .orElseThrow { EnrollmentException.StudentNotFound(studentId) }
+                .orElseThrow { StudentException.NotFound(studentId) }
 
         val course =
             courseRepository.findById(courseId)
-                .orElseThrow { EnrollmentException.CourseNotFound(courseId) }
+                .orElseThrow { CourseException.NotFound(courseId) }
 
         if (enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ENROLLED)) {
             throw EnrollmentException.AlreadyEnrolled(studentId, courseId)
         }
 
-        validateCreditLimit(studentId, course.credits)
+        validateCreditLimit(studentId, course.credits.value)
         validateScheduleConflict(studentId, course)
 
         val lockKey = RedisLockService.enrollmentLockKey(courseId)
@@ -54,10 +57,10 @@ class EnrollmentService(
             redisLockService.executeWithLock(lockKey) {
                 val lockedCourse =
                     courseRepository.findByIdWithLock(courseId)
-                        .orElseThrow { EnrollmentException.CourseNotFound(courseId) }
+                        .orElseThrow { CourseException.NotFound(courseId) }
 
                 if (lockedCourse.isFull()) {
-                    throw EnrollmentException.CourseFull(courseId)
+                    throw CourseException.Full(courseId)
                 }
 
                 lockedCourse.incrementEnrollment()
@@ -68,7 +71,7 @@ class EnrollmentService(
             }
 
         return result?.let { EnrollmentResponse.from(it) }
-            ?: throw EnrollmentException.LockAcquisitionFailed(courseId)
+            ?: throw LockException.AcquisitionFailed("course:$courseId")
     }
 
     @Transactional
@@ -81,7 +84,7 @@ class EnrollmentService(
                 studentId,
                 courseId,
                 EnrollmentStatus.ENROLLED,
-            ).orElseThrow { EnrollmentException.EnrollmentNotFound(0) }
+            ).orElseThrow { EnrollmentException.NotFound(0) }
 
         val lockKey = RedisLockService.enrollmentLockKey(courseId)
         val result =
@@ -90,7 +93,7 @@ class EnrollmentService(
 
                 val course =
                     courseRepository.findByIdWithLock(courseId)
-                        .orElseThrow { EnrollmentException.CourseNotFound(courseId) }
+                        .orElseThrow { CourseException.NotFound(courseId) }
                 course.decrementEnrollment()
                 courseRepository.save(course)
 
@@ -98,13 +101,13 @@ class EnrollmentService(
             }
 
         return result?.let { EnrollmentResponse.from(it) }
-            ?: throw EnrollmentException.LockAcquisitionFailed(courseId)
+            ?: throw LockException.AcquisitionFailed("course:$courseId")
     }
 
     @Transactional(readOnly = true)
     fun getEnrollmentsByStudent(studentId: Long): List<EnrollmentResponse> {
         if (!studentRepository.existsById(studentId)) {
-            throw EnrollmentException.StudentNotFound(studentId)
+            throw StudentException.NotFound(studentId)
         }
 
         return enrollmentRepository

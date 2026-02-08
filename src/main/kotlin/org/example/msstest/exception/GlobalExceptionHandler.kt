@@ -19,6 +19,46 @@ class GlobalExceptionHandler {
             .body(ErrorResponse.of(e.errorCode, e.message))
     }
 
+    @ExceptionHandler(StudentException::class)
+    fun handleStudentException(e: StudentException): ResponseEntity<ErrorResponse> {
+        logger.warn("StudentException: ${e.errorCode.code} - ${e.message}")
+        return ResponseEntity
+            .status(e.errorCode.status)
+            .body(ErrorResponse.of(e.errorCode, e.message))
+    }
+
+    @ExceptionHandler(CourseException::class)
+    fun handleCourseException(e: CourseException): ResponseEntity<ErrorResponse> {
+        logger.warn("CourseException: ${e.errorCode.code} - ${e.message}")
+        return ResponseEntity
+            .status(e.errorCode.status)
+            .body(ErrorResponse.of(e.errorCode, e.message))
+    }
+
+    @ExceptionHandler(ProfessorException::class)
+    fun handleProfessorException(e: ProfessorException): ResponseEntity<ErrorResponse> {
+        logger.warn("ProfessorException: ${e.errorCode.code} - ${e.message}")
+        return ResponseEntity
+            .status(e.errorCode.status)
+            .body(ErrorResponse.of(e.errorCode, e.message))
+    }
+
+    @ExceptionHandler(LockException::class)
+    fun handleLockException(e: LockException): ResponseEntity<ErrorResponse> {
+        logger.warn("LockException: ${e.errorCode.code} - ${e.message}")
+        return ResponseEntity
+            .status(e.errorCode.status)
+            .body(ErrorResponse.of(e.errorCode, e.message))
+    }
+
+    @ExceptionHandler(QueueException::class)
+    fun handleQueueException(e: QueueException): ResponseEntity<ErrorResponse> {
+        logger.warn("QueueException: ${e.errorCode.code} - ${e.message}")
+        return ResponseEntity
+            .status(e.errorCode.status)
+            .body(ErrorResponse.of(e.errorCode, e.message))
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
         val message =

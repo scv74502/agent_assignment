@@ -2,6 +2,7 @@ package org.example.msstest
 
 import com.redis.testcontainers.RedisContainer
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.redis.core.RedisTemplate
@@ -15,6 +16,7 @@ import org.testcontainers.utility.DockerImageName
 @SpringBootTest
 @ActiveProfiles("test")
 @Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class IntegrationTestBase {
     @Autowired
     private lateinit var redisTemplate: RedisTemplate<String, Any>
@@ -26,15 +28,12 @@ abstract class IntegrationTestBase {
                 .withUsername("test")
                 .withPassword("test")
                 .withReuse(true)
+                .apply { start() }
 
         private val redisContainer: RedisContainer =
             RedisContainer(DockerImageName.parse("redis:7-alpine"))
                 .withReuse(true)
-
-        init {
-            mysqlContainer.start()
-            redisContainer.start()
-        }
+                .apply { start() }
 
         @JvmStatic
         @DynamicPropertySource

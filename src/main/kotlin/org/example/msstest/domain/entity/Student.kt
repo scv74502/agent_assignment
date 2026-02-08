@@ -1,11 +1,14 @@
 package org.example.msstest.domain.entity
 
 import jakarta.persistence.Column
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.example.msstest.domain.vo.StudentNo
+import org.example.msstest.domain.vo.converter.StudentNoConverter
 
 @Entity
 @Table(name = "students")
@@ -14,7 +17,8 @@ class Student(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
     @Column(nullable = false, unique = true, length = 10)
-    val studentNo: String,
+    @Convert(converter = StudentNoConverter::class)
+    val studentNo: StudentNo,
     @Column(nullable = false, length = 50)
     val name: String,
     @Column(nullable = false, length = 50)
@@ -28,6 +32,11 @@ class Student(
             name: String,
             department: String,
             grade: Int,
-        ): Student = Student(studentNo = studentNo, name = name, department = department, grade = grade)
+        ): Student = Student(
+            studentNo = StudentNo(studentNo),
+            name = name,
+            department = department,
+            grade = grade,
+        )
     }
 }

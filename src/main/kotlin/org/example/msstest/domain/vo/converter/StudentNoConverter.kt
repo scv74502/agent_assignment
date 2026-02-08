@@ -1,0 +1,12 @@
+package org.example.msstest.domain.vo.converter
+
+import jakarta.persistence.AttributeConverter
+import jakarta.persistence.Converter
+import org.example.msstest.domain.vo.StudentNo
+
+@Converter(autoApply = false)
+class StudentNoConverter : AttributeConverter<StudentNo, String> {
+    override fun convertToDatabaseColumn(attribute: StudentNo?): String? = attribute?.value
+
+    override fun convertToEntityAttribute(dbData: String?): StudentNo? = dbData?.let { StudentNo(it) }
+}

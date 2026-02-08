@@ -2,7 +2,7 @@ package org.example.msstest.service
 
 import org.example.msstest.dto.response.TimetableEntry
 import org.example.msstest.dto.response.TimetableResponse
-import org.example.msstest.exception.EnrollmentException
+import org.example.msstest.exception.StudentException
 import org.example.msstest.repository.CourseScheduleRepository
 import org.example.msstest.repository.EnrollmentRepository
 import org.example.msstest.repository.StudentRepository
@@ -18,7 +18,7 @@ class TimetableService(
     @Transactional(readOnly = true)
     fun getTimetable(studentId: Long): TimetableResponse {
         if (!studentRepository.existsById(studentId)) {
-            throw EnrollmentException.StudentNotFound(studentId)
+            throw StudentException.NotFound(studentId)
         }
 
         val totalCredits = enrollmentRepository.sumCreditsByStudentId(studentId)

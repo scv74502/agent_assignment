@@ -13,7 +13,7 @@ data class StudentResponse(
         fun from(student: Student): StudentResponse =
             StudentResponse(
                 id = student.id,
-                studentNo = student.studentNo,
+                studentNo = student.studentNo.value,
                 name = student.name,
                 department = student.department,
                 grade = student.grade,

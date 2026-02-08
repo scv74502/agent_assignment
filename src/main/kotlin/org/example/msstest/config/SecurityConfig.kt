@@ -26,7 +26,7 @@ class SecurityConfig {
                         "/api/health/**",
                         "/api/v1/**",
                     ).permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll()
             }.build()
 
     @Bean

@@ -1,7 +1,7 @@
 package org.example.msstest.service
 
 import org.example.msstest.dto.response.CourseResponse
-import org.example.msstest.exception.EnrollmentException
+import org.example.msstest.exception.CourseException
 import org.example.msstest.repository.CourseRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +20,7 @@ class CourseService(
     fun getCourseById(courseId: Long): CourseResponse {
         val course =
             courseRepository.findById(courseId)
-                .orElseThrow { EnrollmentException.CourseNotFound(courseId) }
+                .orElseThrow { CourseException.NotFound(courseId) }
         return CourseResponse.from(course)
     }
 

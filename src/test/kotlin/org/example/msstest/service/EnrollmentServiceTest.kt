@@ -6,7 +6,9 @@ import org.example.msstest.domain.entity.CourseSchedule
 import org.example.msstest.domain.entity.EnrollmentStatus
 import org.example.msstest.domain.entity.Professor
 import org.example.msstest.domain.entity.Student
+import org.example.msstest.exception.CourseException
 import org.example.msstest.exception.EnrollmentException
+import org.example.msstest.exception.StudentException
 import org.example.msstest.repository.CourseRepository
 import org.example.msstest.repository.CourseScheduleRepository
 import org.example.msstest.repository.EnrollmentRepository
@@ -96,7 +98,7 @@ class EnrollmentServiceTest : IntegrationTestBase() {
         @Test
         @DisplayName("존재하지 않는 학생으로 수강신청 시 예외 발생")
         fun enroll_studentNotFound_throws() {
-            assertThrows<EnrollmentException.StudentNotFound> {
+            assertThrows<StudentException.NotFound> {
                 enrollmentService.enroll(9999L, course.id)
             }
         }
@@ -104,7 +106,7 @@ class EnrollmentServiceTest : IntegrationTestBase() {
         @Test
         @DisplayName("존재하지 않는 강좌로 수강신청 시 예외 발생")
         fun enroll_courseNotFound_throws() {
-            assertThrows<EnrollmentException.CourseNotFound> {
+            assertThrows<CourseException.NotFound> {
                 enrollmentService.enroll(student.id, 9999L)
             }
         }
@@ -240,7 +242,7 @@ class EnrollmentServiceTest : IntegrationTestBase() {
         @Test
         @DisplayName("수강신청하지 않은 강좌 취소 시 예외 발생")
         fun cancel_notEnrolled_throws() {
-            assertThrows<EnrollmentException.EnrollmentNotFound> {
+            assertThrows<EnrollmentException.NotFound> {
                 enrollmentService.cancel(student.id, course.id)
             }
         }

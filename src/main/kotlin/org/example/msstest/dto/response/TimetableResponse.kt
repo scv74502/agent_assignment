@@ -24,7 +24,7 @@ data class TimetableEntry(
         fun from(schedule: CourseSchedule): TimetableEntry =
             TimetableEntry(
                 courseId = schedule.course.id,
-                courseCode = schedule.course.courseCode,
+                courseCode = schedule.course.courseCode.value,
                 courseName = schedule.course.courseName,
                 professorName = schedule.course.professor.name,
                 dayOfWeek = schedule.dayOfWeek,

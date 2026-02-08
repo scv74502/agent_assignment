@@ -1,7 +1,7 @@
 package org.example.msstest.service
 
 import org.example.msstest.dto.response.ProfessorResponse
-import org.example.msstest.exception.EnrollmentException
+import org.example.msstest.exception.ProfessorException
 import org.example.msstest.repository.ProfessorRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,7 +17,7 @@ class ProfessorService(
     fun getProfessorById(professorId: Long): ProfessorResponse {
         val professor =
             professorRepository.findById(professorId)
-                .orElseThrow { EnrollmentException.ProfessorNotFound(professorId) }
+                .orElseThrow { ProfessorException.NotFound(professorId) }
         return ProfessorResponse.from(professor)
     }
 

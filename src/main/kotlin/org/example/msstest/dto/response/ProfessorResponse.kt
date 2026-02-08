@@ -12,7 +12,7 @@ data class ProfessorResponse(
         fun from(professor: Professor): ProfessorResponse =
             ProfessorResponse(
                 id = professor.id,
-                professorNo = professor.professorNo,
+                professorNo = professor.professorNo.value,
                 name = professor.name,
                 department = professor.department,
             )
