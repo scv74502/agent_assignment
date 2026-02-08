@@ -1,0 +1,46 @@
+# CLAUDE.md
+
+## 정보
+- kotlin + mysql + redis 활용한 수강신청 관련 API
+- ktlint를 통해 코드의 품질을 관리
+- 변수명과 클래스명은 Camel case를 따르며 네이밍 일관성을 확보해야 함
+- .env + dovenv를 통해 설정값 관리
+
+## 코틀린 규칙
+- value object, inline function, sealed class 사용
+- error는 가능한 한 global handler 두어서 처리
+- error의 종류에 따라서 다른 종류 handler 사용
+
+## Spring 규칙
+- Swagger를 적극적으로 사용
+- 테스트를 통해 코드를 검증하고, 코드의 비즈니스 로직과 테스트를 항상 일치시킴
+- 단위 테스트/통합 테스트를 모두 구성하고 통합 테스트는 별도 테스트용 인프라에서 수행
+- org/example/msstest/controller/openapi에서 인터페이스로 swagger 먼저 구현하고 org/example/msstest/controller에서 상속받아 엔드포인트 구현
+
+## 인프라 규칙
+- spring 제외한 redis, mysql 모두 별도 docker 컨테이너 통해 실행ㄴ
+- 통합 테스트의 경우 TestContainer 활용하여 인프라 구성 후 통합 테스트
+
+## 커밋 규칙
+
+- **Github Flow 따름**
+- 형식: `[type] 제목`
+- 본문(body), footer, Co-Authored-By 트레일러를 포함하지 않는다
+- type 종류: `feat`, `fix`, `refactor`, `test`, `docs`, `style`, `chore`
+- 제목은 한글로 간결하게 작성한다
+- 공동 작업자에 Agent 제외하고 사용자만 명시
+
+### 예시
+
+```
+[feat] 회원 조회 및 삭제 API 추가
+[fix] Logback JSON_CONSOLE 설정 수정
+[refactor] ExceptionLogger ANSI 코드 제거
+[test] Storage 레이어 통합 테스트 보강
+```
+
+## 브랜치 규칙
+
+- 네이밍: `feature/<이슈번호>-<간단한설명>`
+- 예시: `feature/1-multi-module-setup`
+- main 브랜치에 직접 push하지 않는다
