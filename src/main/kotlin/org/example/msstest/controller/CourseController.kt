@@ -1,7 +1,9 @@
 package org.example.msstest.controller
 
 import org.example.msstest.controller.openapi.CourseApi
+import org.example.msstest.domain.entity.CourseType
 import org.example.msstest.dto.response.CourseResponse
+import org.example.msstest.dto.response.CursorPageResponse
 import org.example.msstest.service.CourseService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -10,14 +12,24 @@ import org.springframework.web.bind.annotation.RestController
 class CourseController(
     private val courseService: CourseService,
 ) : CourseApi {
-    override fun getAllCourses(): ResponseEntity<List<CourseResponse>> {
-        val courses = courseService.getAllCourses()
-        return ResponseEntity.ok(courses)
+    override fun getAllCourses(
+        cursor: Long?,
+        size: Int?,
+        department: String?,
+        courseType: CourseType?,
+    ): ResponseEntity<CursorPageResponse<CourseResponse>> {
+        val page = courseService.getAllCoursesPaged(cursor, size, department, courseType)
+        return ResponseEntity.ok(page)
     }
 
-    override fun getAvailableCourses(): ResponseEntity<List<CourseResponse>> {
-        val courses = courseService.getAvailableCourses()
-        return ResponseEntity.ok(courses)
+    override fun getAvailableCourses(
+        cursor: Long?,
+        size: Int?,
+        department: String?,
+        courseType: CourseType?,
+    ): ResponseEntity<CursorPageResponse<CourseResponse>> {
+        val page = courseService.getAvailableCoursesPaged(cursor, size, department, courseType)
+        return ResponseEntity.ok(page)
     }
 
     override fun getCourseById(courseId: Long): ResponseEntity<CourseResponse> {

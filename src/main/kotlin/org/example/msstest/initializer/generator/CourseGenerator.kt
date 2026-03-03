@@ -9,6 +9,8 @@ data class CourseData(
     val credits: Int,
     val capacity: Int,
     val professorId: Long,
+    val courseType: String,
+    val department: String,
     val schedules: List<ScheduleData>,
 )
 
@@ -16,7 +18,15 @@ class CourseGenerator(
     private val scheduleGenerator: ScheduleGenerator = ScheduleGenerator(),
     private val random: Random = Random.Default,
 ) {
+    private val generalDepartments = setOf("국어국문학과", "영어영문학과", "수학과", "물리학과")
     private val courseCountByDept = mutableMapOf<String, Int>()
+
+    private fun determineCourseType(department: String): String =
+        if (department in generalDepartments) {
+            if (random.nextFloat() < 0.3f) "GENERAL_REQUIRED" else "GENERAL_ELECTIVE"
+        } else {
+            if (random.nextFloat() < 0.4f) "MAJOR_REQUIRED" else "MAJOR_ELECTIVE"
+        }
 
     fun generate(
         count: Int,
@@ -62,6 +72,7 @@ class CourseGenerator(
         val capacity = listOf(30, 40, 50, 60, 80, 100)[random.nextInt(6)]
         val professorId = professorIds[random.nextInt(professorIds.size)]
         val schedules = scheduleGenerator.generateForCredits(credits)
+        val courseType = determineCourseType(department)
 
         return CourseData(
             courseCode = courseCode,
@@ -69,6 +80,8 @@ class CourseGenerator(
             credits = credits,
             capacity = capacity,
             professorId = professorId,
+            courseType = courseType,
+            department = department,
             schedules = schedules,
         )
     }

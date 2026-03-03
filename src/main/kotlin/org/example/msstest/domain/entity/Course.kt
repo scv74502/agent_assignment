@@ -4,6 +4,8 @@ import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -36,6 +38,11 @@ class Course(
     val capacity: Int,
     @Column(nullable = false)
     var currentEnrollment: Int = 0,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    val courseType: CourseType,
+    @Column(nullable = false, length = 50)
+    val department: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professor_id", nullable = false)
     val professor: Professor,
@@ -70,12 +77,16 @@ class Course(
             credits: Int,
             capacity: Int,
             professor: Professor,
+            courseType: CourseType,
+            department: String,
         ): Course =
             Course(
                 courseCode = CourseCode(courseCode),
                 courseName = courseName,
                 credits = Credits(credits),
                 capacity = capacity,
+                courseType = courseType,
+                department = department,
                 professor = professor,
             )
     }

@@ -83,8 +83,8 @@ class BatchInsertExecutor(
         courses.chunked(batchSize).forEach { batch ->
             jdbcTemplate.batchUpdate(
                 """
-                INSERT INTO courses (course_code, course_name, credits, capacity, current_enrollment, professor_id, version, created_at, updated_at)
-                VALUES (?, ?, ?, ?, 0, ?, 0, ?, ?)
+                INSERT INTO courses (course_code, course_name, credits, capacity, current_enrollment, course_type, department, professor_id, version, created_at, updated_at)
+                VALUES (?, ?, ?, ?, 0, ?, ?, ?, 0, ?, ?)
                 """.trimIndent(),
                 batch.map { course ->
                     arrayOf(
@@ -92,6 +92,8 @@ class BatchInsertExecutor(
                         course.courseName,
                         course.credits,
                         course.capacity,
+                        course.courseType,
+                        course.department,
                         course.professorId,
                         now,
                         now,

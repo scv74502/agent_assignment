@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.example.msstest.domain.entity.CourseType
 import org.example.msstest.dto.response.CourseResponse
+import org.example.msstest.dto.response.CursorPageResponse
 import org.example.msstest.dto.response.ErrorResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,23 +20,39 @@ import org.springframework.web.bind.annotation.RequestParam
 @Tag(name = "Course", description = "강좌 API")
 @RequestMapping("/api/v1/courses")
 interface CourseApi {
-    @Operation(summary = "전체 강좌 조회", description = "모든 강좌 목록을 조회합니다")
+    @Operation(summary = "전체 강좌 조회", description = "커서 기반 페이지네이션으로 강좌 목록을 조회합니다")
     @ApiResponse(
         responseCode = "200",
         description = "조회 성공",
-        content = [Content(schema = Schema(implementation = CourseResponse::class))],
     )
     @GetMapping
-    fun getAllCourses(): ResponseEntity<List<CourseResponse>>
+    fun getAllCourses(
+        @Parameter(description = "커서 (이전 페이지의 마지막 강좌 ID)")
+        @RequestParam(required = false) cursor: Long?,
+        @Parameter(description = "페이지 크기 (기본값: 20, 최대: 100)")
+        @RequestParam(required = false) size: Int?,
+        @Parameter(description = "학과 필터")
+        @RequestParam(required = false) department: String?,
+        @Parameter(description = "이수구분 필터 (MAJOR_REQUIRED, MAJOR_ELECTIVE, GENERAL_REQUIRED, GENERAL_ELECTIVE)")
+        @RequestParam(required = false) courseType: CourseType?,
+    ): ResponseEntity<CursorPageResponse<CourseResponse>>
 
-    @Operation(summary = "수강 가능 강좌 조회", description = "정원이 남아있는 강좌 목록을 조회합니다")
+    @Operation(summary = "수강 가능 강좌 조회", description = "정원이 남아있는 강좌를 커서 기반 페이지네이션으로 조회합니다")
     @ApiResponse(
         responseCode = "200",
         description = "조회 성공",
-        content = [Content(schema = Schema(implementation = CourseResponse::class))],
     )
     @GetMapping("/available")
-    fun getAvailableCourses(): ResponseEntity<List<CourseResponse>>
+    fun getAvailableCourses(
+        @Parameter(description = "커서 (이전 페이지의 마지막 강좌 ID)")
+        @RequestParam(required = false) cursor: Long?,
+        @Parameter(description = "페이지 크기 (기본값: 20, 최대: 100)")
+        @RequestParam(required = false) size: Int?,
+        @Parameter(description = "학과 필터")
+        @RequestParam(required = false) department: String?,
+        @Parameter(description = "이수구분 필터 (MAJOR_REQUIRED, MAJOR_ELECTIVE, GENERAL_REQUIRED, GENERAL_ELECTIVE)")
+        @RequestParam(required = false) courseType: CourseType?,
+    ): ResponseEntity<CursorPageResponse<CourseResponse>>
 
     @Operation(summary = "강좌 상세 조회", description = "특정 강좌의 상세 정보를 조회합니다")
     @ApiResponses(

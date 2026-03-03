@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -65,6 +66,15 @@ class GlobalExceptionHandler {
             e.bindingResult.fieldErrors
                 .joinToString(", ") { "${it.field}: ${it.defaultMessage}" }
         logger.warn("ValidationException: $message")
+        return ResponseEntity
+            .badRequest()
+            .body(ErrorResponse.of(ErrorCode.INVALID_INPUT, message))
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleTypeMismatchException(e: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> {
+        val message = "잘못된 파라미터입니다: ${e.name}=${e.value}"
+        logger.warn("TypeMismatchException: $message")
         return ResponseEntity
             .badRequest()
             .body(ErrorResponse.of(ErrorCode.INVALID_INPUT, message))
