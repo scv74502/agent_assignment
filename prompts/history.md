@@ -246,3 +246,26 @@ src/main/kotlin/org/example/msstest/initializer/
 4. `[docs] 문서 및 설정 업데이트` — .gitignore, CLAUDE.MD, MSS_PROBLEM.MD 등 6파일
 
 **최종 검증**: 66 tests 전체 통과 (`./gradlew test --rerun`)
+
+---
+
+### TestContainers 컨테이너 관리 개선
+**요청**: "TestContainers reuse 컨테이너가 수동 정리 전까지 영구 존재하는 문제 해결용 Gradle 태스크 추가"
+
+**배경**:
+- `.withReuse(true)` + `testcontainers.reuse.enable=true` 설정으로 컨테이너 누적 문제는 해결됨
+- 상태 초기화는 `ddl-auto: create-drop` + `clearRedis()` @BeforeEach로 이미 보장
+- 남은 문제: reuse 컨테이너가 개발 세션 종료 후에도 영구 존재
+
+**작업**:
+- `build.gradle.kts`에 `cleanTestContainers` Exec 태스크 추가
+- `docker ps -aq --filter label=org.testcontainers=true`로 TC 컨테이너만 식별
+- 컨테이너가 없으면 메시지 출력 후 `StopExecutionException`으로 스킵
+- 있으면 `docker rm -f`로 선택적 제거
+
+**검증**:
+- `./gradlew tasks --group=verification` → `cleanTestContainers` 태스크 등록 확인
+- 컨테이너 없을 때 → "정리할 TestContainers 컨테이너가 없습니다." 메시지 + BUILD SUCCESSFUL
+- `./gradlew test --rerun` → 66 tests 전체 통과, MySQL/Redis reuse 컨테이너 2개 생성
+- `./gradlew cleanTestContainers` → TC 컨테이너 2개 제거
+- `docker ps` → 개발용 `mysql_db`만 남음

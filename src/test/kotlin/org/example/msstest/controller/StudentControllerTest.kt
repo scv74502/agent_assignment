@@ -92,7 +92,7 @@ class StudentControllerTest {
             val student = StudentResponse(1L, "20240001", "홍길동", "컴퓨터공학과", 1)
             `when`(studentService.getStudentByStudentNo("20240001")).thenReturn(student)
 
-            mockMvc.perform(get("/api/v1/students/by-student-no/20240001"))
+            mockMvc.perform(get("/api/v1/students").param("studentNo", "20240001"))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.studentNo").value("20240001"))
         }

@@ -78,3 +78,19 @@ allOpen {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.register<Exec>("cleanTestContainers") {
+    description = "TestContainers reusable 컨테이너를 정리합니다"
+    group = "verification"
+    commandLine("docker", "rm", "-f")
+    doFirst {
+        val containerIds = Runtime.getRuntime()
+            .exec(arrayOf("docker", "ps", "-aq", "--filter", "label=org.testcontainers=true"))
+            .inputStream.bufferedReader().readText().trim()
+        if (containerIds.isBlank()) {
+            logger.lifecycle("정리할 TestContainers 컨테이너가 없습니다.")
+            throw StopExecutionException()
+        }
+        commandLine("docker", "rm", "-f", *containerIds.split("\n").toTypedArray())
+    }
+}

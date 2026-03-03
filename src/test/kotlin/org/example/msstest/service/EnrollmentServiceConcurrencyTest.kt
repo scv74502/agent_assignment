@@ -2,6 +2,7 @@ package org.example.msstest.service
 
 import org.example.msstest.IntegrationTestBase
 import org.example.msstest.domain.entity.Course
+import org.example.msstest.domain.entity.CourseType
 import org.example.msstest.domain.entity.EnrollmentStatus
 import org.example.msstest.domain.entity.Professor
 import org.example.msstest.domain.entity.Student
@@ -9,16 +10,20 @@ import org.example.msstest.repository.CourseRepository
 import org.example.msstest.repository.EnrollmentRepository
 import org.example.msstest.repository.ProfessorRepository
 import org.example.msstest.repository.StudentRepository
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 
 @DisplayName("수강신청 동시성 통합 테스트")
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
     @Autowired
     private lateinit var enrollmentService: EnrollmentService
@@ -35,8 +40,17 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
     @Autowired
     private lateinit var enrollmentRepository: EnrollmentRepository
 
+    private lateinit var professor: Professor
     private lateinit var course: Course
     private lateinit var students: List<Student>
+
+    @AfterEach
+    fun cleanup() {
+        enrollmentRepository.deleteAll()
+        courseRepository.deleteAll()
+        studentRepository.deleteAll()
+        professorRepository.deleteAll()
+    }
 
     @BeforeEach
     fun setup() {
@@ -45,7 +59,7 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
         studentRepository.deleteAll()
         professorRepository.deleteAll()
 
-        val professor = professorRepository.save(Professor.create("P001", "김교수", "컴퓨터공학과"))
+        professor = professorRepository.save(Professor.create("P001", "김교수", "컴퓨터공학과"))
 
         course =
             courseRepository.save(
@@ -55,6 +69,8 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
                     credits = 3,
                     capacity = 1,
                     professor = professor,
+                    courseType = CourseType.MAJOR_REQUIRED,
+                    department = "컴퓨터공학과",
                 ),
             )
 
@@ -115,8 +131,6 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
     fun concurrentEnrollment_thirtySucceed() {
         enrollmentRepository.deleteAll()
         courseRepository.deleteAll()
-
-        val professor = professorRepository.findByProfessorNo("P001").get()
         val course30 =
             courseRepository.save(
                 Course.create(
@@ -125,6 +139,8 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
                     credits = 3,
                     capacity = 30,
                     professor = professor,
+                    courseType = CourseType.MAJOR_REQUIRED,
+                    department = "컴퓨터공학과",
                 ),
             )
 
