@@ -269,3 +269,29 @@ src/main/kotlin/org/example/msstest/initializer/
 - `./gradlew test --rerun` → 66 tests 전체 통과, MySQL/Redis reuse 컨테이너 2개 생성
 - `./gradlew cleanTestContainers` → TC 컨테이너 2개 제거
 - `docker ps` → 개발용 `mysql_db`만 남음
+
+---
+
+### 브랜치 분리: 002 완료 → main 머지 → 003 분기
+**요청**: "main에 섞인 5개 커밋을 브랜치 전략에 맞게 재구성"
+
+**배경**:
+- main에 API 개편(002)과 동시성 수정(003) 커밋이 혼재
+- origin/main이 이미 push된 상태라 force-push 필요
+
+**작업**:
+1. `feature/002-api-improvement` 브랜치 생성 (7c011c7 기준)
+   - `[feat]` 강좌 이수구분 + 커서 페이지네이션 (cherry-pick a36ab9f)
+   - `[test]` 테스트 데이터 격리 + 강좌 API 테스트 (10파일 선별)
+   - `[docs]` 문서 및 설정 업데이트 (6파일)
+   - `[fix]` TestContainers reusable 컨테이너 정리 태스크 추가
+2. main 리셋(7c011c7) → feature/002 fast-forward 머지
+3. `feature/003-race-condition-fix` 브랜치 생성 (main 기준)
+   - `[fix]` 수강신청 동시성 L1 캐시 충돌 및 분산락 타임아웃 수정 (cherry-pick b847d3b)
+   - `[fix]` testcontainers 의존성 최신화 (1.19.7 → 1.21.4)
+4. main force-push + feature/003 push
+
+**검증**:
+- 002 `compileTestKotlin` 성공
+- 003 `./gradlew test --rerun` → 66 tests 전체 통과
+- 브랜치 그래프 구조 확인 완료
