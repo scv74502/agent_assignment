@@ -372,6 +372,41 @@
         "description" : "특정 교수가 담당하는 강좌 목록을 조회합니다",
         "operationId" : "getAllCourses",
         "parameters" : [ {
+          "name" : "cursor",
+          "in" : "query",
+          "description" : "커서 (이전 페이지의 마지막 강좌 ID)",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "페이지 크기 (기본값: 20, 최대: 100)",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "department",
+          "in" : "query",
+          "description" : "학과 필터",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "courseType",
+          "in" : "query",
+          "description" : "이수구분 필터 (MAJOR_REQUIRED, MAJOR_ELECTIVE, GENERAL_REQUIRED, GENERAL_ELECTIVE)",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "MAJOR_REQUIRED", "MAJOR_ELECTIVE", "GENERAL_REQUIRED", "GENERAL_ELECTIVE" ]
+          }
+        }, {
           "name" : "professorId",
           "in" : "query",
           "description" : "교수 ID",
@@ -387,7 +422,11 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/CourseResponse"
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/CourseResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/CursorPageResponseCourseResponse"
+                  } ]
                 }
               }
             }
@@ -439,15 +478,51 @@
       "get" : {
         "tags" : [ "Course" ],
         "summary" : "수강 가능 강좌 조회",
-        "description" : "정원이 남아있는 강좌 목록을 조회합니다",
+        "description" : "정원이 남아있는 강좌를 커서 기반 페이지네이션으로 조회합니다",
         "operationId" : "getAvailableCourses",
+        "parameters" : [ {
+          "name" : "cursor",
+          "in" : "query",
+          "description" : "커서 (이전 페이지의 마지막 강좌 ID)",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "페이지 크기 (기본값: 20, 최대: 100)",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "department",
+          "in" : "query",
+          "description" : "학과 필터",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "courseType",
+          "in" : "query",
+          "description" : "이수구분 필터 (MAJOR_REQUIRED, MAJOR_ELECTIVE, GENERAL_REQUIRED, GENERAL_ELECTIVE)",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "MAJOR_REQUIRED", "MAJOR_ELECTIVE", "GENERAL_REQUIRED", "GENERAL_ELECTIVE" ]
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "조회 성공",
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/CourseResponse"
+                  "$ref" : "#/components/schemas/CursorPageResponseCourseResponse"
                 }
               }
             }
@@ -653,6 +728,15 @@
             "type" : "integer",
             "format" : "int32"
           },
+          "courseType" : {
+            "type" : "string"
+          },
+          "courseTypeDisplay" : {
+            "type" : "string"
+          },
+          "department" : {
+            "type" : "string"
+          },
           "professorId" : {
             "type" : "integer",
             "format" : "int64"
@@ -670,7 +754,30 @@
             }
           }
         },
-        "required" : [ "capacity", "courseCode", "courseName", "credits", "currentEnrollment", "id", "professorId", "professorName", "remainingCapacity", "schedule", "schedules" ]
+        "required" : [ "capacity", "courseCode", "courseName", "courseType", "courseTypeDisplay", "credits", "currentEnrollment", "department", "id", "professorId", "professorName", "remainingCapacity", "schedule", "schedules" ]
+      },
+      "CursorPageResponseCourseResponse" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CourseResponse"
+            }
+          },
+          "nextCursor" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "hasNext" : {
+            "type" : "boolean"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "hasNext", "items", "size" ]
       },
       "ScheduleResponse" : {
         "type" : "object",

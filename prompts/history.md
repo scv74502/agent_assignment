@@ -171,3 +171,78 @@ src/main/kotlin/org/example/msstest/initializer/
 - `/health` → 200 OK
 - `/api/v1/students` → 200 OK (데이터 반환)
 - `/api/v1/courses` → 200 OK (데이터 반환)
+
+---
+
+## 2026-03-03
+
+### 강좌 조회 API 개편: 커서 페이지네이션 + 학과/과목유형 필터링
+**요청**: "강좌 조회에서 학과별/과목유형별 조회, 커서 기반 pageable, API 문서 겸 인터페이스와 도메인/엔티티/테스트 수정"
+
+**설계 결정** (사용자 확인):
+- 과목유형: 전공필수/전공선택/교양필수/교양선택 (4분류)
+- 학과: Course 엔티티에 department 필드 직접 추가
+- 커서 키: Course ID (Long, auto-increment)
+- 적용 범위: GET /courses + GET /courses/available
+
+**작업**:
+- Phase 1: `CourseType` enum 생성, `Course` 엔티티에 `courseType`, `department` 필드 추가
+- Phase 2: `CourseSpecifications` 유틸리티 생성 (JPA Specification 조합), `CourseRepository`에 `JpaSpecificationExecutor` 추가, DataInitializer 업데이트
+- Phase 3: `CursorPageResponse<T>` 커서 페이지 래퍼 DTO 생성, `CourseResponse`/`CreateCourseRequest`에 필드 추가
+- Phase 4-5: `CourseService`에 `getAllCoursesPaged`/`getAvailableCoursesPaged` 메서드 추가, `CourseApi`/`CourseController` 시그니처 변경, `GlobalExceptionHandler`에 `MethodArgumentTypeMismatchException` 핸들러 추가
+- Phase 6: 기존 테스트의 `Course.create()` 호출 전부 수정 (courseType, department 파라미터 추가)
+- Phase 7: `CourseTypeTest`, `CourseControllerTest`, `CourseServiceTest` 신규 테스트 작성
+
+**검증**:
+- 컴파일 성공 (`compileKotlin`, `compileTestKotlin`)
+- 단위 테스트 통과 (CourseTypeTest, CourseControllerTest, CourseScheduleTest, CreditsTest)
+- 통합 테스트는 Docker 실행 후 별도 확인 필요
+
+---
+
+### 테스트 데이터 격리 개선: @Transactional 자동 롤백 도입
+**요청**: "테스트 데이터 격리를 @Transactional 롤백 방식으로 개선"
+
+**설계 결정**:
+- `IntegrationTestBase`에 `@Transactional` 추가 → 각 테스트 종료 시 자동 롤백
+- 동시성 테스트(`EnrollmentServiceConcurrencyTest`)는 `@Transactional(propagation = NOT_SUPPORTED)`로 예외 처리
+- `MssTestApplicationTests`, `OpenApiGeneratorTest`를 `IntegrationTestBase` 상속으로 전환
+
+**작업**:
+- `IntegrationTestBase`에 `@Transactional` 어노테이션 추가
+- `StudentRepositoryTest`: `@BeforeEach setup()` (deleteAll) 제거
+- `EnrollmentRepositoryTest`: `deleteAll()` 4줄 제거, save()만 유지
+- `EnrollmentServiceTest`: `deleteAll()` 5줄 제거, save()만 유지
+- `CourseServiceTest`: `deleteAll()` 제거, save()만 유지
+- `EnrollmentServiceConcurrencyTest`: `@Transactional(propagation = NOT_SUPPORTED)` 추가, `@AfterEach cleanup()` 추가
+- `MssTestApplicationTests`: `IntegrationTestBase()` 상속, `@SpringBootTest` 제거
+- `OpenApiGeneratorTest`: `IntegrationTestBase()` 상속, `@SpringBootTest` 제거
+
+**검증**:
+- 컴파일 성공 (`compileTestKotlin`)
+- 변경된 통합 테스트 전체 통과 (StudentRepositoryTest, EnrollmentRepositoryTest, EnrollmentServiceTest, CourseServiceTest, MssTestApplicationTests, OpenApiGeneratorTest, 동시성 테스트 1번)
+- 기존 실패 2건은 본 변경과 무관: StudentControllerTest(엔드포인트 경로 불일치), 동시성 테스트 2번(Redis 락 타이밍)
+
+---
+
+### 커밋 및 버그 수정
+**요청**: "현재 변경사항 커밋 준비"
+
+**테스트 실행 중 발견한 버그 수정**:
+1. **수강신청 동시성 L1 캐시 충돌** (`EnrollmentService.enroll()`):
+   - 원인: `findById()` → L1 캐시에 version=0 로드 → `findByIdWithLock()` → L1 캐시 엔티티 반환 → `save()` 시 `WHERE version=0` 조건이 갱신된 DB와 불일치 → `ObjectOptimisticLockingFailureException`
+   - 수정: lock 전 `findById()` → `existsById()`로 변경, credit/schedule 검증을 lock 내부로 이동
+2. **분산락 타임아웃** (`RedisLockService`):
+   - 원인: `waitTime=5s`, `leaseTime=3s`로 다수 스레드 직렬 처리에 부족
+   - 수정: 기본값 `waitTime=30s`, `leaseTime=30s`로 조정
+3. **StudentControllerTest URL 불일치**:
+   - 원인: 테스트가 `/api/v1/students/by-student-no/20240001` (PathVariable) 사용, 실제 엔드포인트는 `@GetMapping(params = ["studentNo"])` (RequestParam)
+   - 수정: `get("/api/v1/students").param("studentNo", "20240001")`로 변경
+
+**커밋 (4건)**:
+1. `[feat] 강좌 이수구분 및 커서 기반 페이지네이션 API 구현` — 소스 코드 13파일
+2. `[fix] 수강신청 동시성 L1 캐시 충돌 및 분산락 타임아웃 수정` — EnrollmentService, RedisLockService
+3. `[test] 테스트 데이터 격리 개선 및 강좌 API 테스트 추가` — 테스트 12파일
+4. `[docs] 문서 및 설정 업데이트` — .gitignore, CLAUDE.MD, MSS_PROBLEM.MD 등 6파일
+
+**최종 검증**: 66 tests 전체 통과 (`./gradlew test --rerun`)

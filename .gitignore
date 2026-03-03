@@ -47,6 +47,39 @@ out/
 ### Claude
 /.claude
 
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+.python-version
+*.pyc
+pip-log.txt
+
+### Quarto ###
+_output/
+*.typ
+.quarto/
+
+### Agent Skills ###
+.agents/
+.agent/
+skills-lock.json
+
+### Study documents ###
+docs/interview
+docs/lecture-plan
+
+
+### AI IDE Plugins ###
+.continue/
+.junie/
+
 ### specify ###
 /.specify
 /mss_specify

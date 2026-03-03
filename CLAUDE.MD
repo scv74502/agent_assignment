@@ -62,5 +62,19 @@
 - Kotlin 1.9.25 + Java 21 + Spring Boot 3.5.10, Spring Data JPA, Spring Security + JWT, SpringDoc OpenAPI (001-course-registration)
 - MySQL (영속 데이터), Redis (분산 락 + 대기열) (001-course-registration)
 
+## 면접 준비 규칙
+- 모의면접 문제 생성 시 반드시 `docs/interview/INTERVIEW-INSTRUCTION.md`를 참조할 것
+  - 2차 테스트의 설계 의도와 문제 해결 과정 중심
+  - 제출한 GitHub 코드 기반 논리 구조 복기 방향
+- 면접 치트시트: `docs/interview/cheatsheet/` (01~07 마크다운)
+- 치트시트 PDF: `docs/interview/cheatsheet/pdf/`
+
+## PDF 생성 규칙
+- **Quarto + Typst** 조합을 사용하여 마크다운을 PDF로 변환
+- 명령어: `quarto render <파일>.md --to typst-pdf --output-dir <출력디렉토리>`
+- `@어노테이션`(예: `@Transactional`)이 Pandoc citation으로 오인되는 경우, `sed 's/@\([A-Z]\)/\\@\1/g'`로 전처리 후 변환
+- **폰트**: 변환 전 YAML 프론트매터에 `mainfont: "Apple SD Gothic Neo"`, `fontsize: 10pt` 추가
+- Quarto 1.8+, Typst 0.14+ 설치 필요
+
 ## Recent Changes
 - 001-course-registration: Added Kotlin 1.9.25 + Java 21 + Spring Boot 3.5.10, Spring Data JPA, Spring Security + JWT, SpringDoc OpenAPI
