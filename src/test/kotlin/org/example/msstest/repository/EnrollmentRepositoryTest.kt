@@ -2,6 +2,7 @@ package org.example.msstest.repository
 
 import org.example.msstest.IntegrationTestBase
 import org.example.msstest.domain.entity.Course
+import org.example.msstest.domain.entity.CourseType
 import org.example.msstest.domain.entity.Enrollment
 import org.example.msstest.domain.entity.EnrollmentStatus
 import org.example.msstest.domain.entity.Professor
@@ -35,14 +36,9 @@ class EnrollmentRepositoryTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
-        enrollmentRepository.deleteAll()
-        courseRepository.deleteAll()
-        studentRepository.deleteAll()
-        professorRepository.deleteAll()
-
         professor = professorRepository.save(Professor.create("P001", "김교수", "컴퓨터공학과"))
         student = studentRepository.save(Student.create("20240001", "홍길동", "컴퓨터공학과", 1))
-        course = courseRepository.save(Course.create("CS101", "자료구조", 3, 30, professor))
+        course = courseRepository.save(Course.create("CS101", "자료구조", 3, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과"))
     }
 
     @Nested
@@ -81,7 +77,7 @@ class EnrollmentRepositoryTest : IntegrationTestBase() {
         @Test
         @DisplayName("학생의 총 학점 계산")
         fun sumCredits() {
-            val course2 = courseRepository.save(Course.create("CS102", "알고리즘", 3, 30, professor))
+            val course2 = courseRepository.save(Course.create("CS102", "알고리즘", 3, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과"))
 
             enrollmentRepository.save(Enrollment.create(student, course))
             enrollmentRepository.save(Enrollment.create(student, course2))

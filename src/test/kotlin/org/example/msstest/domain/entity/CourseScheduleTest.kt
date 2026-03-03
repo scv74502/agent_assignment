@@ -18,7 +18,7 @@ class CourseScheduleTest {
         endMinute: Int,
     ): CourseSchedule {
         val professor = Professor.create("P001", "교수", "컴퓨터공학과")
-        val course = Course.create("CS101", "자료구조", 3, 30, professor)
+        val course = Course.create("CS101", "자료구조", 3, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과")
         return CourseSchedule.create(
             course = course,
             dayOfWeek = dayOfWeek,

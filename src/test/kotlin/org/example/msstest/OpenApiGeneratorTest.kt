@@ -4,17 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-@SpringBootTest
 @AutoConfigureMockMvc
-class OpenApiGeneratorTest {
+class OpenApiGeneratorTest : IntegrationTestBase() {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -35,7 +32,7 @@ class OpenApiGeneratorTest {
 
         val outputFile = outputDir.resolve("openapi.json").toFile()
         outputFile.writeText(formattedJson)
-        
+
         println("OpenAPI documentation generated at: ${outputFile.absolutePath}")
     }
 }

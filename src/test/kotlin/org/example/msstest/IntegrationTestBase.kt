@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.containers.MySQLContainer
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
@@ -17,6 +18,7 @@ import org.testcontainers.utility.DockerImageName
 @ActiveProfiles("test")
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 abstract class IntegrationTestBase {
     @Autowired
     private lateinit var redisTemplate: RedisTemplate<String, Any>

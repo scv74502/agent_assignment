@@ -3,6 +3,7 @@ package org.example.msstest.service
 import org.example.msstest.IntegrationTestBase
 import org.example.msstest.domain.entity.Course
 import org.example.msstest.domain.entity.CourseSchedule
+import org.example.msstest.domain.entity.CourseType
 import org.example.msstest.domain.entity.EnrollmentStatus
 import org.example.msstest.domain.entity.Professor
 import org.example.msstest.domain.entity.Student
@@ -51,12 +52,6 @@ class EnrollmentServiceTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
-        enrollmentRepository.deleteAll()
-        courseScheduleRepository.deleteAll()
-        courseRepository.deleteAll()
-        studentRepository.deleteAll()
-        professorRepository.deleteAll()
-
         professor = professorRepository.save(Professor.create("P001", "김교수", "컴퓨터공학과"))
         student =
             studentRepository.save(
@@ -64,7 +59,7 @@ class EnrollmentServiceTest : IntegrationTestBase() {
             )
         course =
             courseRepository.save(
-                Course.create("CS101", "자료구조", 3, 30, professor),
+                Course.create("CS101", "자료구조", 3, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과"),
             )
     }
 
@@ -120,9 +115,9 @@ class EnrollmentServiceTest : IntegrationTestBase() {
         fun enroll_creditLimitExceeded_throws() {
             val courses =
                 listOf(
-                    courseRepository.save(Course.create("CS102", "알고리즘", 6, 30, professor)),
-                    courseRepository.save(Course.create("CS103", "운영체제", 6, 30, professor)),
-                    courseRepository.save(Course.create("CS104", "네트워크", 6, 30, professor)),
+                    courseRepository.save(Course.create("CS102", "알고리즘", 6, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과")),
+                    courseRepository.save(Course.create("CS103", "운영체제", 6, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과")),
+                    courseRepository.save(Course.create("CS104", "네트워크", 6, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과")),
                 )
 
             courses.forEach { c ->
@@ -134,7 +129,7 @@ class EnrollmentServiceTest : IntegrationTestBase() {
 
             val additionalCourse =
                 courseRepository.save(
-                    Course.create("CS105", "데이터베이스", 3, 30, professor),
+                    Course.create("CS105", "데이터베이스", 3, 30, professor, CourseType.MAJOR_ELECTIVE, "컴퓨터공학과"),
                 )
 
             assertThrows<EnrollmentException.CreditLimitExceeded> {
@@ -145,9 +140,9 @@ class EnrollmentServiceTest : IntegrationTestBase() {
         @Test
         @DisplayName("정확히 18학점까지는 수강신청 가능")
         fun enroll_exactlyMaxCredits_success() {
-            val course6 = courseRepository.save(Course.create("CS102", "알고리즘", 6, 30, professor))
-            val course9 = courseRepository.save(Course.create("CS103", "운영체제", 6, 30, professor))
-            val course6b = courseRepository.save(Course.create("CS104", "네트워크", 6, 30, professor))
+            val course6 = courseRepository.save(Course.create("CS102", "알고리즘", 6, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과"))
+            val course9 = courseRepository.save(Course.create("CS103", "운영체제", 6, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과"))
+            val course6b = courseRepository.save(Course.create("CS104", "네트워크", 6, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과"))
 
             enrollmentService.enroll(student.id, course6.id)
             enrollmentService.enroll(student.id, course9.id)
@@ -176,7 +171,7 @@ class EnrollmentServiceTest : IntegrationTestBase() {
 
             enrollmentService.enroll(student.id, course.id)
 
-            val course2 = courseRepository.save(Course.create("CS102", "알고리즘", 3, 30, professor))
+            val course2 = courseRepository.save(Course.create("CS102", "알고리즘", 3, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과"))
             val schedule2 =
                 CourseSchedule.create(
                     course = course2,
@@ -207,7 +202,7 @@ class EnrollmentServiceTest : IntegrationTestBase() {
 
             enrollmentService.enroll(student.id, course.id)
 
-            val course2 = courseRepository.save(Course.create("CS102", "알고리즘", 3, 30, professor))
+            val course2 = courseRepository.save(Course.create("CS102", "알고리즘", 3, 30, professor, CourseType.MAJOR_REQUIRED, "컴퓨터공학과"))
             val schedule2 =
                 CourseSchedule.create(
                     course = course2,

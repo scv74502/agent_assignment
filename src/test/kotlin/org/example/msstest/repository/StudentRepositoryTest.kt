@@ -6,7 +6,6 @@ import org.example.msstest.domain.vo.StudentNo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -16,11 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class StudentRepositoryTest : IntegrationTestBase() {
     @Autowired
     private lateinit var studentRepository: StudentRepository
-
-    @BeforeEach
-    fun setup() {
-        studentRepository.deleteAll()
-    }
 
     @Nested
     @DisplayName("findByStudentNo")
