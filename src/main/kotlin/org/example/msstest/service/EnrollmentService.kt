@@ -38,35 +38,37 @@ class EnrollmentService(
         courseId: Long,
     ): EnrollmentResponse {
         val student =
-            studentRepository.findById(studentId)
+            studentRepository
+                .findById(studentId)
                 .orElseThrow { StudentException.NotFound(studentId) }
 
-        val course =
-            courseRepository.findById(courseId)
-                .orElseThrow { CourseException.NotFound(courseId) }
+        if (!courseRepository.existsById(courseId)) {
+            throw CourseException.NotFound(courseId)
+        }
 
         if (enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(studentId, courseId, EnrollmentStatus.ENROLLED)) {
             throw EnrollmentException.AlreadyEnrolled(studentId, courseId)
         }
 
-        validateCreditLimit(studentId, course.credits.value)
-        validateScheduleConflict(studentId, course)
-
         val lockKey = RedisLockService.enrollmentLockKey(courseId)
         val result =
             redisLockService.executeWithLock(lockKey) {
-                val lockedCourse =
-                    courseRepository.findByIdWithLock(courseId)
+                val course =
+                    courseRepository
+                        .findByIdWithLock(courseId)
                         .orElseThrow { CourseException.NotFound(courseId) }
 
-                if (lockedCourse.isFull()) {
+                validateCreditLimit(studentId, course.credits.value)
+                validateScheduleConflict(studentId, courseId)
+
+                if (course.isFull()) {
                     throw CourseException.Full(courseId)
                 }
 
-                lockedCourse.incrementEnrollment()
-                courseRepository.save(lockedCourse)
+                course.incrementEnrollment()
+                courseRepository.save(course)
 
-                val enrollment = Enrollment.create(student, lockedCourse)
+                val enrollment = Enrollment.create(student, course)
                 enrollmentRepository.save(enrollment)
             }
 
@@ -80,11 +82,12 @@ class EnrollmentService(
         courseId: Long,
     ): EnrollmentResponse {
         val enrollment =
-            enrollmentRepository.findByStudentIdAndCourseIdAndStatus(
-                studentId,
-                courseId,
-                EnrollmentStatus.ENROLLED,
-            ).orElseThrow { EnrollmentException.NotFound(0) }
+            enrollmentRepository
+                .findByStudentIdAndCourseIdAndStatus(
+                    studentId,
+                    courseId,
+                    EnrollmentStatus.ENROLLED,
+                ).orElseThrow { EnrollmentException.NotFound(0) }
 
         val lockKey = RedisLockService.enrollmentLockKey(courseId)
         val result =
@@ -92,7 +95,8 @@ class EnrollmentService(
                 enrollment.cancel()
 
                 val course =
-                    courseRepository.findByIdWithLock(courseId)
+                    courseRepository
+                        .findByIdWithLock(courseId)
                         .orElseThrow { CourseException.NotFound(courseId) }
                 course.decrementEnrollment()
                 courseRepository.save(course)
@@ -127,15 +131,15 @@ class EnrollmentService(
 
     private fun validateScheduleConflict(
         studentId: Long,
-        newCourse: Course,
+        courseId: Long,
     ) {
         val enrolledSchedules = courseScheduleRepository.findByStudentEnrollments(studentId)
-        val newSchedules = courseScheduleRepository.findByCourseId(newCourse.id)
+        val newSchedules = courseScheduleRepository.findByCourseId(courseId)
 
         for (enrolled in enrolledSchedules) {
             for (newSchedule in newSchedules) {
                 if (hasTimeOverlap(enrolled, newSchedule)) {
-                    throw EnrollmentException.ScheduleConflict(enrolled.course.id, newCourse.id)
+                    throw EnrollmentException.ScheduleConflict(enrolled.course.id, courseId)
                 }
             }
         }
