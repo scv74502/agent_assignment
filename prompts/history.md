@@ -269,3 +269,27 @@ src/main/kotlin/org/example/msstest/initializer/
 - `./gradlew test --rerun` → 66 tests 전체 통과, MySQL/Redis reuse 컨테이너 2개 생성
 - `./gradlew cleanTestContainers` → TC 컨테이너 2개 제거
 - `docker ps` → 개발용 `mysql_db`만 남음
+
+---
+
+## 2026-03-04
+
+### 수강신청 동시성 학점 초과 레이스 컨디션 수정 및 락 타임아웃 조정
+**요청**: "수강신청 동시성 학점 초과 레이스 컨디션 수정 및 락 타임아웃 조정" 플랜 구현
+
+**문제**:
+- Redis 분산락이 과목 단위(`enrollment:lock:course:{courseId}`)로만 걸려, 동일 학생이 서로 다른 2과목에 동시 수강신청하면 학점 제한(18학점) 초과 가능한 레이스 컨디션 존재
+- `@Transactional`이 메서드 레벨에 있어 락 해제 후 트랜잭션 커밋되는 미세한 윈도우 존재
+- waitTime=30s, leaseTime=30s는 수강신청 UX에 비해 과도
+
+**작업**:
+1. **RedisLockService.kt**: 기본 타임아웃 waitTime 30→5s, leaseTime 30→10s 조정. `enrollmentLockKey(courseId)` → `enrollmentLockKey(studentId)` 변경 (키 패턴: `enrollment:lock:student:$studentId`)
+2. **EnrollmentService.kt**:
+   - `enroll()`, `cancel()`에서 `@Transactional` 제거
+   - 락 키를 학생 ID 기반으로 변경
+   - `TransactionTemplate`을 주입받아 락 내부에서 트랜잭션 관리 (커밋 후 락 해제 보장)
+   - `EnrollmentResponse.from()` 호출을 트랜잭션 블록 내부로 이동 (LazyInitializationException 방지)
+   - 락 외부에 빠른 실패 검증, 락 내부에 정확한 재검증 (double-check)
+3. **EnrollmentServiceConcurrencyTest.kt**: 동일 학생 학점 초과 방지 동시성 테스트 추가 (학생 1명, 15학점 수강 중, 3학점 2과목 동시 신청 → 1건 성공/1건 실패 검증)
+
+**검증**: 67 tests 전체 통과 (기존 66 + 신규 1)
