@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 
 @Service
 class EnrollmentService(
@@ -28,19 +29,18 @@ class EnrollmentService(
     private val courseScheduleRepository: CourseScheduleRepository,
     private val redisLockService: RedisLockService,
     private val queueService: EnrollmentQueueService,
+    private val transactionTemplate: TransactionTemplate,
     @Value("\${enrollment.max-credits:18}") private val maxCredits: Int,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @Transactional
     fun enroll(
         studentId: Long,
         courseId: Long,
     ): EnrollmentResponse {
-        val student =
-            studentRepository
-                .findById(studentId)
-                .orElseThrow { StudentException.NotFound(studentId) }
+        if (!studentRepository.existsById(studentId)) {
+            throw StudentException.NotFound(studentId)
+        }
 
         if (!courseRepository.existsById(courseId)) {
             throw CourseException.NotFound(courseId)
@@ -50,33 +50,48 @@ class EnrollmentService(
             throw EnrollmentException.AlreadyEnrolled(studentId, courseId)
         }
 
-        val lockKey = RedisLockService.enrollmentLockKey(courseId)
+        val lockKey = RedisLockService.enrollmentLockKey(studentId)
         val result =
             redisLockService.executeWithLock(lockKey) {
-                val course =
-                    courseRepository
-                        .findByIdWithLock(courseId)
-                        .orElseThrow { CourseException.NotFound(courseId) }
+                transactionTemplate.execute {
+                    val student =
+                        studentRepository
+                            .findById(studentId)
+                            .orElseThrow { StudentException.NotFound(studentId) }
 
-                validateCreditLimit(studentId, course.credits.value)
-                validateScheduleConflict(studentId, courseId)
+                    if (enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(
+                            studentId,
+                            courseId,
+                            EnrollmentStatus.ENROLLED,
+                        )
+                    ) {
+                        throw EnrollmentException.AlreadyEnrolled(studentId, courseId)
+                    }
 
-                if (course.isFull()) {
-                    throw CourseException.Full(courseId)
+                    val course =
+                        courseRepository
+                            .findByIdWithLock(courseId)
+                            .orElseThrow { CourseException.NotFound(courseId) }
+
+                    validateCreditLimit(studentId, course.credits.value)
+                    validateScheduleConflict(studentId, courseId)
+
+                    if (course.isFull()) {
+                        throw CourseException.Full(courseId)
+                    }
+
+                    course.incrementEnrollment()
+                    courseRepository.save(course)
+
+                    val enrollment = Enrollment.create(student, course)
+                    EnrollmentResponse.from(enrollmentRepository.save(enrollment))
                 }
-
-                course.incrementEnrollment()
-                courseRepository.save(course)
-
-                val enrollment = Enrollment.create(student, course)
-                enrollmentRepository.save(enrollment)
             }
 
-        return result?.let { EnrollmentResponse.from(it) }
-            ?: throw LockException.AcquisitionFailed("course:$courseId")
+        return result
+            ?: throw LockException.AcquisitionFailed("student:$studentId")
     }
 
-    @Transactional
     fun cancel(
         studentId: Long,
         courseId: Long,
@@ -89,23 +104,29 @@ class EnrollmentService(
                     EnrollmentStatus.ENROLLED,
                 ).orElseThrow { EnrollmentException.NotFound(0) }
 
-        val lockKey = RedisLockService.enrollmentLockKey(courseId)
+        val lockKey = RedisLockService.enrollmentLockKey(studentId)
         val result =
             redisLockService.executeWithLock(lockKey) {
-                enrollment.cancel()
+                transactionTemplate.execute {
+                    val managedEnrollment =
+                        enrollmentRepository
+                            .findById(enrollment.id)
+                            .orElseThrow { EnrollmentException.NotFound(enrollment.id) }
+                    managedEnrollment.cancel()
 
-                val course =
-                    courseRepository
-                        .findByIdWithLock(courseId)
-                        .orElseThrow { CourseException.NotFound(courseId) }
-                course.decrementEnrollment()
-                courseRepository.save(course)
+                    val course =
+                        courseRepository
+                            .findByIdWithLock(courseId)
+                            .orElseThrow { CourseException.NotFound(courseId) }
+                    course.decrementEnrollment()
+                    courseRepository.save(course)
 
-                enrollmentRepository.save(enrollment)
+                    EnrollmentResponse.from(enrollmentRepository.save(managedEnrollment))
+                }
             }
 
-        return result?.let { EnrollmentResponse.from(it) }
-            ?: throw LockException.AcquisitionFailed("course:$courseId")
+        return result
+            ?: throw LockException.AcquisitionFailed("student:$studentId")
     }
 
     @Transactional(readOnly = true)

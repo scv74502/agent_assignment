@@ -13,8 +13,8 @@ class RedisLockService(
 
     fun <T> executeWithLock(
         lockKey: String,
-        waitTime: Long = 30L,
-        leaseTime: Long = 30L,
+        waitTime: Long = 5L,
+        leaseTime: Long = 10L,
         timeUnit: TimeUnit = TimeUnit.SECONDS,
         action: () -> T,
     ): T? {
@@ -44,8 +44,8 @@ class RedisLockService(
 
     fun tryLock(
         lockKey: String,
-        waitTime: Long = 30L,
-        leaseTime: Long = 30L,
+        waitTime: Long = 5L,
+        leaseTime: Long = 10L,
         timeUnit: TimeUnit = TimeUnit.SECONDS,
     ): Boolean {
         val lock = redissonClient.getLock(lockKey)
@@ -65,6 +65,6 @@ class RedisLockService(
     }
 
     companion object {
-        fun enrollmentLockKey(courseId: Long): String = "enrollment:lock:course:$courseId"
+        fun enrollmentLockKey(studentId: Long): String = "enrollment:lock:student:$studentId"
     }
 }
