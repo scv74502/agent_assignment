@@ -1,4 +1,4 @@
-package org.example.msstest.dto.request
+package org.example.msstest.student.dto.request
 
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min

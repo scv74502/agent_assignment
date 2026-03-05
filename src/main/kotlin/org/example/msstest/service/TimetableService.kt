@@ -2,22 +2,22 @@ package org.example.msstest.service
 
 import org.example.msstest.dto.response.TimetableEntry
 import org.example.msstest.dto.response.TimetableResponse
-import org.example.msstest.exception.StudentException
 import org.example.msstest.repository.CourseScheduleRepository
 import org.example.msstest.repository.EnrollmentRepository
-import org.example.msstest.repository.StudentRepository
+import org.example.msstest.student.exception.StudentException
+import org.example.msstest.student.service.StudentService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TimetableService(
-    private val studentRepository: StudentRepository,
+    private val studentService: StudentService,
     private val enrollmentRepository: EnrollmentRepository,
     private val courseScheduleRepository: CourseScheduleRepository,
 ) {
     @Transactional(readOnly = true)
     fun getTimetable(studentId: Long): TimetableResponse {
-        if (!studentRepository.existsById(studentId)) {
+        if (!studentService.existsById(studentId)) {
             throw StudentException.NotFound(studentId)
         }
 

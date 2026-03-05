@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import org.example.msstest.common.entity.BaseEntity
+import org.example.msstest.student.entity.Student
 
 @Entity
 @Table(

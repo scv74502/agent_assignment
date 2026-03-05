@@ -1,6 +1,6 @@
-package org.example.msstest.dto.response
+package org.example.msstest.student.dto.response
 
-import org.example.msstest.domain.entity.Student
+import org.example.msstest.student.entity.Student
 
 data class StudentResponse(
     val id: Long,

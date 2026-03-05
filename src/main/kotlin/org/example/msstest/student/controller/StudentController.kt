@@ -1,8 +1,8 @@
-package org.example.msstest.controller
+package org.example.msstest.student.controller
 
-import org.example.msstest.controller.openapi.StudentApi
-import org.example.msstest.dto.response.StudentResponse
-import org.example.msstest.service.StudentService
+import org.example.msstest.student.dto.response.StudentResponse
+import org.example.msstest.student.openapi.StudentApi
+import org.example.msstest.student.service.StudentService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 

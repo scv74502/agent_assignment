@@ -1,9 +1,10 @@
-package org.example.msstest.service
+package org.example.msstest.student.service
 
-import org.example.msstest.domain.vo.StudentNo
-import org.example.msstest.dto.response.StudentResponse
-import org.example.msstest.exception.StudentException
-import org.example.msstest.repository.StudentRepository
+import org.example.msstest.student.dto.response.StudentResponse
+import org.example.msstest.student.entity.Student
+import org.example.msstest.student.exception.StudentException
+import org.example.msstest.student.repository.StudentRepository
+import org.example.msstest.student.vo.StudentNo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -29,4 +30,12 @@ class StudentService(
                 .orElseThrow { StudentException.NotFoundByNo(studentNo) }
         return StudentResponse.from(student)
     }
+
+    @Transactional(readOnly = true)
+    fun existsById(studentId: Long): Boolean = studentRepository.existsById(studentId)
+
+    @Transactional(readOnly = true)
+    fun findStudentEntityById(studentId: Long): Student =
+        studentRepository.findById(studentId)
+            .orElseThrow { StudentException.NotFound(studentId) }
 }

@@ -1,4 +1,4 @@
-package org.example.msstest.domain.entity
+package org.example.msstest.student.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
@@ -8,8 +8,8 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.example.msstest.common.entity.BaseEntity
-import org.example.msstest.domain.vo.StudentNo
-import org.example.msstest.domain.vo.converter.StudentNoConverter
+import org.example.msstest.student.vo.StudentNo
+import org.example.msstest.student.vo.converter.StudentNoConverter
 
 @Entity
 @Table(name = "students")

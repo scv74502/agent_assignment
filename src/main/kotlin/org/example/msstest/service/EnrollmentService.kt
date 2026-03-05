@@ -1,6 +1,5 @@
 package org.example.msstest.service
 
-import org.example.msstest.domain.entity.Course
 import org.example.msstest.domain.entity.CourseSchedule
 import org.example.msstest.domain.entity.Enrollment
 import org.example.msstest.domain.entity.EnrollmentStatus
@@ -8,23 +7,22 @@ import org.example.msstest.dto.response.EnrollmentResponse
 import org.example.msstest.exception.CourseException
 import org.example.msstest.exception.EnrollmentException
 import org.example.msstest.common.exception.LockException
-import org.example.msstest.exception.StudentException
 import org.example.msstest.common.lock.RedisLockService
 import org.example.msstest.common.queue.EnrollmentQueueService
 import org.example.msstest.repository.CourseRepository
 import org.example.msstest.repository.CourseScheduleRepository
 import org.example.msstest.repository.EnrollmentRepository
-import org.example.msstest.repository.StudentRepository
+import org.example.msstest.student.exception.StudentException
+import org.example.msstest.student.service.StudentService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 
 @Service
 class EnrollmentService(
     private val enrollmentRepository: EnrollmentRepository,
-    private val studentRepository: StudentRepository,
+    private val studentService: StudentService,
     private val courseRepository: CourseRepository,
     private val courseScheduleRepository: CourseScheduleRepository,
     private val redisLockService: RedisLockService,
@@ -38,7 +36,7 @@ class EnrollmentService(
         studentId: Long,
         courseId: Long,
     ): EnrollmentResponse {
-        if (!studentRepository.existsById(studentId)) {
+        if (!studentService.existsById(studentId)) {
             throw StudentException.NotFound(studentId)
         }
 
@@ -54,10 +52,7 @@ class EnrollmentService(
         val result =
             redisLockService.executeWithLock(lockKey) {
                 transactionTemplate.execute {
-                    val student =
-                        studentRepository
-                            .findById(studentId)
-                            .orElseThrow { StudentException.NotFound(studentId) }
+                    val student = studentService.findStudentEntityById(studentId)
 
                     if (enrollmentRepository.existsByStudentIdAndCourseIdAndStatus(
                             studentId,
@@ -129,9 +124,9 @@ class EnrollmentService(
             ?: throw LockException.AcquisitionFailed("student:$studentId")
     }
 
-    @Transactional(readOnly = true)
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     fun getEnrollmentsByStudent(studentId: Long): List<EnrollmentResponse> {
-        if (!studentRepository.existsById(studentId)) {
+        if (!studentService.existsById(studentId)) {
             throw StudentException.NotFound(studentId)
         }
 

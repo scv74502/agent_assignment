@@ -1,4 +1,4 @@
-package org.example.msstest.exception
+package org.example.msstest.student.exception
 
 import org.example.msstest.common.exception.DomainBusinessException
 import org.example.msstest.common.exception.ErrorCode
