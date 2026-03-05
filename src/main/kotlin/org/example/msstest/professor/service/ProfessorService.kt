@@ -1,8 +1,8 @@
-package org.example.msstest.service
+package org.example.msstest.professor.service
 
-import org.example.msstest.dto.response.ProfessorResponse
-import org.example.msstest.exception.ProfessorException
-import org.example.msstest.repository.ProfessorRepository
+import org.example.msstest.professor.dto.response.ProfessorResponse
+import org.example.msstest.professor.exception.ProfessorException
+import org.example.msstest.professor.repository.ProfessorRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

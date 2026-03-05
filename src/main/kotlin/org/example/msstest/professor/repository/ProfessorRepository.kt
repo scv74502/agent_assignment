@@ -1,6 +1,6 @@
-package org.example.msstest.repository
+package org.example.msstest.professor.repository
 
-import org.example.msstest.domain.entity.Professor
+import org.example.msstest.professor.entity.Professor
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.Optional

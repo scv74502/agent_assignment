@@ -1,4 +1,4 @@
-package org.example.msstest.domain.vo
+package org.example.msstest.professor.vo
 
 data class ProfessorNo(val value: String) {
     init {

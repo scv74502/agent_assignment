@@ -1,4 +1,4 @@
-package org.example.msstest.dto.request
+package org.example.msstest.professor.dto.request
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
