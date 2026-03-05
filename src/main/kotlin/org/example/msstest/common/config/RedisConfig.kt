@@ -1,4 +1,4 @@
-package org.example.msstest.config
+package org.example.msstest.common.config
 
 import org.redisson.Redisson
 import org.redisson.api.RedissonClient

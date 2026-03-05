@@ -1,6 +1,6 @@
-package org.example.msstest.controller
+package org.example.msstest.common.healthcheck
 
-import org.example.msstest.controller.openapi.HealthCheckApi
+import org.example.msstest.common.healthcheck.openapi.HealthCheckApi
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 

@@ -3,7 +3,7 @@ package org.example.msstest.controller
 import org.example.msstest.controller.openapi.CourseApi
 import org.example.msstest.domain.entity.CourseType
 import org.example.msstest.dto.response.CourseResponse
-import org.example.msstest.dto.response.CursorPageResponse
+import org.example.msstest.common.dto.CursorPageResponse
 import org.example.msstest.service.CourseService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController

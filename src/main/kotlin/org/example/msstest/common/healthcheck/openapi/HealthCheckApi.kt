@@ -1,4 +1,4 @@
-package org.example.msstest.controller.openapi
+package org.example.msstest.common.healthcheck.openapi
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse

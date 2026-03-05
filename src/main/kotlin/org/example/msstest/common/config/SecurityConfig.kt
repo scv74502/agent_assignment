@@ -1,4 +1,4 @@
-package org.example.msstest.config
+package org.example.msstest.common.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

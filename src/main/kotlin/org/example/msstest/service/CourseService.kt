@@ -2,7 +2,7 @@ package org.example.msstest.service
 
 import org.example.msstest.domain.entity.CourseType
 import org.example.msstest.dto.response.CourseResponse
-import org.example.msstest.dto.response.CursorPageResponse
+import org.example.msstest.common.dto.CursorPageResponse
 import org.example.msstest.exception.CourseException
 import org.example.msstest.repository.CourseRepository
 import org.example.msstest.repository.CourseSpecifications

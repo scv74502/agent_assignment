@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.example.msstest.common.entity.BaseEntity
 import org.example.msstest.domain.vo.ProfessorNo
 import org.example.msstest.domain.vo.converter.ProfessorNoConverter
 

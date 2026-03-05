@@ -1,6 +1,6 @@
-package org.example.msstest.dto.response
+package org.example.msstest.common.dto
 
-import org.example.msstest.exception.ErrorCode
+import org.example.msstest.common.exception.ErrorCode
 import java.time.LocalDateTime
 
 data class ErrorResponse(

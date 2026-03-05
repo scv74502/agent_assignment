@@ -1,4 +1,4 @@
-package org.example.msstest.lock
+package org.example.msstest.common.lock
 
 import org.redisson.api.RedissonClient
 import org.slf4j.LoggerFactory

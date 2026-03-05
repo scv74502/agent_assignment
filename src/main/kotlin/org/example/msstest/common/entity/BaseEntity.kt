@@ -1,4 +1,4 @@
-package org.example.msstest.domain.entity
+package org.example.msstest.common.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners

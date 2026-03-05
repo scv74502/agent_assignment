@@ -7,10 +7,10 @@ import org.example.msstest.domain.entity.EnrollmentStatus
 import org.example.msstest.dto.response.EnrollmentResponse
 import org.example.msstest.exception.CourseException
 import org.example.msstest.exception.EnrollmentException
-import org.example.msstest.exception.LockException
+import org.example.msstest.common.exception.LockException
 import org.example.msstest.exception.StudentException
-import org.example.msstest.lock.RedisLockService
-import org.example.msstest.queue.EnrollmentQueueService
+import org.example.msstest.common.lock.RedisLockService
+import org.example.msstest.common.queue.EnrollmentQueueService
 import org.example.msstest.repository.CourseRepository
 import org.example.msstest.repository.CourseScheduleRepository
 import org.example.msstest.repository.EnrollmentRepository

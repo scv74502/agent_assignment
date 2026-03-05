@@ -1,4 +1,4 @@
-package org.example.msstest.exception
+package org.example.msstest.common.exception
 
 import org.springframework.http.HttpStatus
 

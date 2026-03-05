@@ -1,4 +1,4 @@
-package org.example.msstest.initializer
+package org.example.msstest.common.initializer
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

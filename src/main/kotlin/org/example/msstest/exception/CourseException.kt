@@ -1,10 +1,13 @@
 package org.example.msstest.exception
 
+import org.example.msstest.common.exception.DomainBusinessException
+import org.example.msstest.common.exception.ErrorCode
+
 sealed class CourseException(
-    val errorCode: ErrorCode,
+    override val errorCode: ErrorCode,
     override val message: String = errorCode.message,
     override val cause: Throwable? = null,
-) : RuntimeException(message, cause) {
+) : RuntimeException(message, cause), DomainBusinessException {
     class NotFound(courseId: Long) :
         CourseException(ErrorCode.COURSE_NOT_FOUND, "강좌를 찾을 수 없습니다: $courseId")
 

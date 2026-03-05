@@ -1,9 +1,9 @@
-package org.example.msstest.initializer
+package org.example.msstest.common.initializer
 
-import org.example.msstest.initializer.generator.CourseData
-import org.example.msstest.initializer.generator.ProfessorData
-import org.example.msstest.initializer.generator.ScheduleData
-import org.example.msstest.initializer.generator.StudentData
+import org.example.msstest.common.initializer.generator.CourseData
+import org.example.msstest.common.initializer.generator.ProfessorData
+import org.example.msstest.common.initializer.generator.ScheduleData
+import org.example.msstest.common.initializer.generator.StudentData
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.Timestamp

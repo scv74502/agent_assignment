@@ -11,7 +11,7 @@ import jakarta.validation.Valid
 import org.example.msstest.dto.request.CancelEnrollmentRequest
 import org.example.msstest.dto.request.EnrollmentRequest
 import org.example.msstest.dto.response.EnrollmentResponse
-import org.example.msstest.dto.response.ErrorResponse
+import org.example.msstest.common.dto.ErrorResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

@@ -1,6 +1,6 @@
-package org.example.msstest.initializer.generator
+package org.example.msstest.common.initializer.generator
 
-import org.example.msstest.initializer.DataTokens
+import org.example.msstest.common.initializer.DataTokens
 import kotlin.random.Random
 
 data class StudentData(

@@ -1,8 +1,8 @@
-package org.example.msstest.initializer
+package org.example.msstest.common.initializer
 
-import org.example.msstest.initializer.generator.CourseGenerator
-import org.example.msstest.initializer.generator.ProfessorGenerator
-import org.example.msstest.initializer.generator.StudentGenerator
+import org.example.msstest.common.initializer.generator.CourseGenerator
+import org.example.msstest.common.initializer.generator.ProfessorGenerator
+import org.example.msstest.common.initializer.generator.StudentGenerator
 import org.slf4j.LoggerFactory
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner

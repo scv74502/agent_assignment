@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.persistence.Version
+import org.example.msstest.common.entity.BaseEntity
 import org.example.msstest.domain.vo.CourseCode
 import org.example.msstest.domain.vo.Credits
 import org.example.msstest.domain.vo.converter.CourseCodeConverter

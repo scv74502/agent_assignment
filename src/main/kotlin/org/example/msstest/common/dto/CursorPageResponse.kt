@@ -1,4 +1,4 @@
-package org.example.msstest.dto.response
+package org.example.msstest.common.dto
 
 data class CursorPageResponse<T>(
     val items: List<T>,

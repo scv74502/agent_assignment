@@ -1,10 +1,13 @@
 package org.example.msstest.exception
 
+import org.example.msstest.common.exception.DomainBusinessException
+import org.example.msstest.common.exception.ErrorCode
+
 sealed class EnrollmentException(
-    val errorCode: ErrorCode,
+    override val errorCode: ErrorCode,
     override val message: String = errorCode.message,
     override val cause: Throwable? = null,
-) : RuntimeException(message, cause) {
+) : RuntimeException(message, cause), DomainBusinessException {
     class AlreadyEnrolled(
         studentId: Long,
         courseId: Long,

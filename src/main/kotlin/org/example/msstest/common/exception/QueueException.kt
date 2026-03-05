@@ -1,10 +1,10 @@
-package org.example.msstest.exception
+package org.example.msstest.common.exception
 
 sealed class QueueException(
-    val errorCode: ErrorCode,
+    override val errorCode: ErrorCode,
     override val message: String = errorCode.message,
     override val cause: Throwable? = null,
-) : RuntimeException(message, cause) {
+) : RuntimeException(message, cause), DomainBusinessException {
     class Full(resourceId: String) :
         QueueException(ErrorCode.QUEUE_FULL, "대기열이 가득 찼습니다: $resourceId")
 
