@@ -1,7 +1,7 @@
-package org.example.msstest.dto.response
+package org.example.msstest.enrollment.dto.response
 
-import org.example.msstest.domain.entity.Enrollment
-import org.example.msstest.domain.entity.EnrollmentStatus
+import org.example.msstest.enrollment.entity.Enrollment
+import org.example.msstest.enrollment.entity.EnrollmentStatus
 import java.time.LocalDateTime
 
 data class EnrollmentResponse(

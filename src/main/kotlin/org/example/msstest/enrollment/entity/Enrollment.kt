@@ -1,4 +1,4 @@
-package org.example.msstest.domain.entity
+package org.example.msstest.enrollment.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -48,9 +48,4 @@ class Enrollment(
             course: Course,
         ): Enrollment = Enrollment(student = student, course = course)
     }
-}
-
-enum class EnrollmentStatus {
-    ENROLLED,
-    CANCELLED,
 }

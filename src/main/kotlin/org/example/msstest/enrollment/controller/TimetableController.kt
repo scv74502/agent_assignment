@@ -1,8 +1,8 @@
-package org.example.msstest.controller
+package org.example.msstest.enrollment.controller
 
-import org.example.msstest.controller.openapi.TimetableApi
-import org.example.msstest.dto.response.TimetableResponse
-import org.example.msstest.service.TimetableService
+import org.example.msstest.enrollment.dto.response.TimetableResponse
+import org.example.msstest.enrollment.openapi.TimetableApi
+import org.example.msstest.enrollment.service.TimetableService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 

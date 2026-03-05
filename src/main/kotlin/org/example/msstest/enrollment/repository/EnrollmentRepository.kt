@@ -1,7 +1,7 @@
-package org.example.msstest.repository
+package org.example.msstest.enrollment.repository
 
-import org.example.msstest.domain.entity.Enrollment
-import org.example.msstest.domain.entity.EnrollmentStatus
+import org.example.msstest.enrollment.entity.Enrollment
+import org.example.msstest.enrollment.entity.EnrollmentStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

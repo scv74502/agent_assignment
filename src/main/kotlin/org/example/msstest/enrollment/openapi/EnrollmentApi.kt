@@ -1,4 +1,4 @@
-package org.example.msstest.controller.openapi
+package org.example.msstest.enrollment.openapi
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.example.msstest.dto.request.CancelEnrollmentRequest
-import org.example.msstest.dto.request.EnrollmentRequest
-import org.example.msstest.dto.response.EnrollmentResponse
 import org.example.msstest.common.dto.ErrorResponse
+import org.example.msstest.enrollment.dto.request.CancelEnrollmentRequest
+import org.example.msstest.enrollment.dto.request.EnrollmentRequest
+import org.example.msstest.enrollment.dto.response.EnrollmentResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

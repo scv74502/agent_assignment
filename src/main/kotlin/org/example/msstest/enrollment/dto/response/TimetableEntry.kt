@@ -1,14 +1,8 @@
-package org.example.msstest.dto.response
+package org.example.msstest.enrollment.dto.response
 
 import org.example.msstest.course.entity.CourseSchedule
 import java.time.DayOfWeek
 import java.time.LocalTime
-
-data class TimetableResponse(
-    val studentId: Long,
-    val totalCredits: Int,
-    val entries: List<TimetableEntry>,
-)
 
 data class TimetableEntry(
     val courseId: Long,

@@ -1,10 +1,10 @@
-package org.example.msstest.controller
+package org.example.msstest.enrollment.controller
 
-import org.example.msstest.controller.openapi.EnrollmentApi
-import org.example.msstest.dto.request.CancelEnrollmentRequest
-import org.example.msstest.dto.request.EnrollmentRequest
-import org.example.msstest.dto.response.EnrollmentResponse
-import org.example.msstest.service.EnrollmentService
+import org.example.msstest.enrollment.dto.request.CancelEnrollmentRequest
+import org.example.msstest.enrollment.dto.request.EnrollmentRequest
+import org.example.msstest.enrollment.dto.response.EnrollmentResponse
+import org.example.msstest.enrollment.openapi.EnrollmentApi
+import org.example.msstest.enrollment.service.EnrollmentService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 

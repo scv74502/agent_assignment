@@ -1,9 +1,9 @@
-package org.example.msstest.service
+package org.example.msstest.enrollment.service
 
 import org.example.msstest.course.repository.CourseScheduleRepository
-import org.example.msstest.dto.response.TimetableEntry
-import org.example.msstest.dto.response.TimetableResponse
-import org.example.msstest.repository.EnrollmentRepository
+import org.example.msstest.enrollment.dto.response.TimetableEntry
+import org.example.msstest.enrollment.dto.response.TimetableResponse
+import org.example.msstest.enrollment.repository.EnrollmentRepository
 import org.example.msstest.student.exception.StudentException
 import org.example.msstest.student.service.StudentService
 import org.springframework.stereotype.Service
