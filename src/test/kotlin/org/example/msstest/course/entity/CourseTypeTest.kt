@@ -1,4 +1,4 @@
-package org.example.msstest.domain.entity
+package org.example.msstest.course.entity
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName

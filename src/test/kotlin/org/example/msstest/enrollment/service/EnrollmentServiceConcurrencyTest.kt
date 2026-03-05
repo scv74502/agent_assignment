@@ -1,15 +1,15 @@
-package org.example.msstest.service
+package org.example.msstest.enrollment.service
 
 import org.example.msstest.IntegrationTestBase
-import org.example.msstest.domain.entity.Course
-import org.example.msstest.domain.entity.CourseType
-import org.example.msstest.domain.entity.EnrollmentStatus
-import org.example.msstest.domain.entity.Professor
-import org.example.msstest.domain.entity.Student
-import org.example.msstest.repository.CourseRepository
-import org.example.msstest.repository.EnrollmentRepository
-import org.example.msstest.repository.ProfessorRepository
-import org.example.msstest.repository.StudentRepository
+import org.example.msstest.course.entity.Course
+import org.example.msstest.course.entity.CourseType
+import org.example.msstest.course.repository.CourseRepository
+import org.example.msstest.enrollment.entity.EnrollmentStatus
+import org.example.msstest.enrollment.repository.EnrollmentRepository
+import org.example.msstest.professor.entity.Professor
+import org.example.msstest.professor.repository.ProfessorRepository
+import org.example.msstest.student.entity.Student
+import org.example.msstest.student.repository.StudentRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

@@ -1,14 +1,14 @@
-package org.example.msstest.controller
+package org.example.msstest.enrollment.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.example.msstest.domain.entity.EnrollmentStatus
-import org.example.msstest.dto.request.CancelEnrollmentRequest
-import org.example.msstest.dto.request.EnrollmentRequest
-import org.example.msstest.dto.response.EnrollmentResponse
-import org.example.msstest.exception.EnrollmentException
-import org.example.msstest.exception.GlobalExceptionHandler
-import org.example.msstest.exception.StudentException
-import org.example.msstest.service.EnrollmentService
+import org.example.msstest.common.exception.GlobalExceptionHandler
+import org.example.msstest.enrollment.dto.request.CancelEnrollmentRequest
+import org.example.msstest.enrollment.dto.request.EnrollmentRequest
+import org.example.msstest.enrollment.dto.response.EnrollmentResponse
+import org.example.msstest.enrollment.entity.EnrollmentStatus
+import org.example.msstest.enrollment.exception.EnrollmentException
+import org.example.msstest.enrollment.service.EnrollmentService
+import org.example.msstest.student.exception.StudentException
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

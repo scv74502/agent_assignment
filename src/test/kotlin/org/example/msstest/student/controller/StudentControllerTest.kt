@@ -1,10 +1,10 @@
-package org.example.msstest.controller
+package org.example.msstest.student.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.example.msstest.dto.response.StudentResponse
-import org.example.msstest.exception.GlobalExceptionHandler
-import org.example.msstest.exception.StudentException
-import org.example.msstest.service.StudentService
+import org.example.msstest.common.exception.GlobalExceptionHandler
+import org.example.msstest.student.dto.response.StudentResponse
+import org.example.msstest.student.exception.StudentException
+import org.example.msstest.student.service.StudentService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

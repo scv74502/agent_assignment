@@ -1,5 +1,6 @@
-package org.example.msstest.domain.entity
+package org.example.msstest.course.entity
 
+import org.example.msstest.professor.entity.Professor
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
