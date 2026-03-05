@@ -56,10 +56,9 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    // TestContainers
-    testImplementation("org.testcontainers:testcontainers:1.19.7")
-    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
-    testImplementation("org.testcontainers:mysql:1.19.7")
+    testImplementation("org.testcontainers:testcontainers:1.21.4")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
+    testImplementation("org.testcontainers:mysql:1.21.4")
     testImplementation("com.redis:testcontainers-redis:2.2.2")
 }
 
@@ -84,9 +83,14 @@ tasks.register<Exec>("cleanTestContainers") {
     group = "verification"
     commandLine("docker", "rm", "-f")
     doFirst {
-        val containerIds = Runtime.getRuntime()
-            .exec(arrayOf("docker", "ps", "-aq", "--filter", "label=org.testcontainers=true"))
-            .inputStream.bufferedReader().readText().trim()
+        val containerIds =
+            Runtime
+                .getRuntime()
+                .exec(arrayOf("docker", "ps", "-aq", "--filter", "label=org.testcontainers=true"))
+                .inputStream
+                .bufferedReader()
+                .readText()
+                .trim()
         if (containerIds.isBlank()) {
             logger.lifecycle("정리할 TestContainers 컨테이너가 없습니다.")
             throw StopExecutionException()

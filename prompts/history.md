@@ -272,26 +272,24 @@ src/main/kotlin/org/example/msstest/initializer/
 
 ---
 
-### 브랜치 분리: 002 완료 → main 머지 → 003 분기
-**요청**: "main에 섞인 5개 커밋을 브랜치 전략에 맞게 재구성"
+## 2026-03-04
 
-**배경**:
-- main에 API 개편(002)과 동시성 수정(003) 커밋이 혼재
-- origin/main이 이미 push된 상태라 force-push 필요
+### 수강신청 동시성 학점 초과 레이스 컨디션 수정 및 락 타임아웃 조정
+**요청**: "수강신청 동시성 학점 초과 레이스 컨디션 수정 및 락 타임아웃 조정" 플랜 구현
+
+**문제**:
+- Redis 분산락이 과목 단위(`enrollment:lock:course:{courseId}`)로만 걸려, 동일 학생이 서로 다른 2과목에 동시 수강신청하면 학점 제한(18학점) 초과 가능한 레이스 컨디션 존재
+- `@Transactional`이 메서드 레벨에 있어 락 해제 후 트랜잭션 커밋되는 미세한 윈도우 존재
+- waitTime=30s, leaseTime=30s는 수강신청 UX에 비해 과도
 
 **작업**:
-1. `feature/002-api-improvement` 브랜치 생성 (7c011c7 기준)
-   - `[feat]` 강좌 이수구분 + 커서 페이지네이션 (cherry-pick a36ab9f)
-   - `[test]` 테스트 데이터 격리 + 강좌 API 테스트 (10파일 선별)
-   - `[docs]` 문서 및 설정 업데이트 (6파일)
-   - `[fix]` TestContainers reusable 컨테이너 정리 태스크 추가
-2. main 리셋(7c011c7) → feature/002 fast-forward 머지
-3. `feature/003-race-condition-fix` 브랜치 생성 (main 기준)
-   - `[fix]` 수강신청 동시성 L1 캐시 충돌 및 분산락 타임아웃 수정 (cherry-pick b847d3b)
-   - `[fix]` testcontainers 의존성 최신화 (1.19.7 → 1.21.4)
-4. main force-push + feature/003 push
+1. **RedisLockService.kt**: 기본 타임아웃 waitTime 30→5s, leaseTime 30→10s 조정. `enrollmentLockKey(courseId)` → `enrollmentLockKey(studentId)` 변경 (키 패턴: `enrollment:lock:student:$studentId`)
+2. **EnrollmentService.kt**:
+   - `enroll()`, `cancel()`에서 `@Transactional` 제거
+   - 락 키를 학생 ID 기반으로 변경
+   - `TransactionTemplate`을 주입받아 락 내부에서 트랜잭션 관리 (커밋 후 락 해제 보장)
+   - `EnrollmentResponse.from()` 호출을 트랜잭션 블록 내부로 이동 (LazyInitializationException 방지)
+   - 락 외부에 빠른 실패 검증, 락 내부에 정확한 재검증 (double-check)
+3. **EnrollmentServiceConcurrencyTest.kt**: 동일 학생 학점 초과 방지 동시성 테스트 추가 (학생 1명, 15학점 수강 중, 3학점 2과목 동시 신청 → 1건 성공/1건 실패 검증)
 
-**검증**:
-- 002 `compileTestKotlin` 성공
-- 003 `./gradlew test --rerun` → 66 tests 전체 통과
-- 브랜치 그래프 구조 확인 완료
+**검증**: 67 tests 전체 통과 (기존 66 + 신규 1)
