@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -93,6 +94,7 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
     fun concurrentEnrollment_onlyOneSucceeds() {
         val threadCount = 100
         val executor = Executors.newFixedThreadPool(threadCount)
+        val barrier = CyclicBarrier(threadCount)
         val latch = CountDownLatch(threadCount)
         val successCount = AtomicInteger(0)
         val failCount = AtomicInteger(0)
@@ -100,6 +102,7 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
         students.forEach { student ->
             executor.submit {
                 try {
+                    barrier.await()
                     enrollmentService.enroll(student.id, course.id)
                     successCount.incrementAndGet()
                 } catch (e: Exception) {
@@ -147,6 +150,7 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
 
         val threadCount = 50
         val executor = Executors.newFixedThreadPool(threadCount)
+        val barrier = CyclicBarrier(threadCount)
         val latch = CountDownLatch(threadCount)
         val successCount = AtomicInteger(0)
         val failCount = AtomicInteger(0)
@@ -154,6 +158,7 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
         students.take(50).forEach { student ->
             executor.submit {
                 try {
+                    barrier.await()
                     enrollmentService.enroll(student.id, course30.id)
                     successCount.incrementAndGet()
                 } catch (e: Exception) {
@@ -238,8 +243,8 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
 
         val threadCount = 2
         val executor = Executors.newFixedThreadPool(threadCount)
-        val startLatch = CountDownLatch(1)
-        val doneLatch = CountDownLatch(threadCount)
+        val barrier = CyclicBarrier(threadCount)
+        val latch = CountDownLatch(threadCount)
         val successCount = AtomicInteger(0)
         val failCount = AtomicInteger(0)
 
@@ -247,19 +252,18 @@ class EnrollmentServiceConcurrencyTest : IntegrationTestBase() {
         coursesToEnroll.forEach { c ->
             executor.submit {
                 try {
-                    startLatch.await()
+                    barrier.await()
                     enrollmentService.enroll(student.id, c.id)
                     successCount.incrementAndGet()
                 } catch (e: Exception) {
                     failCount.incrementAndGet()
                 } finally {
-                    doneLatch.countDown()
+                    latch.countDown()
                 }
             }
         }
 
-        startLatch.countDown()
-        doneLatch.await()
+        latch.await()
         executor.shutdown()
 
         assertEquals(1, successCount.get(), "성공한 수강신청은 1건이어야 함")
