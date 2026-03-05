@@ -1,4 +1,4 @@
-package org.example.msstest.dto.request
+package org.example.msstest.course.dto.request
 
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
-import org.example.msstest.domain.entity.CourseType
+import org.example.msstest.course.entity.CourseType
 
 data class CreateCourseRequest(
     @field:NotBlank(message = "과목코드는 필수입니다")

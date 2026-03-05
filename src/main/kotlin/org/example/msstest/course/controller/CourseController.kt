@@ -1,10 +1,10 @@
-package org.example.msstest.controller
+package org.example.msstest.course.controller
 
-import org.example.msstest.controller.openapi.CourseApi
-import org.example.msstest.domain.entity.CourseType
-import org.example.msstest.dto.response.CourseResponse
 import org.example.msstest.common.dto.CursorPageResponse
-import org.example.msstest.service.CourseService
+import org.example.msstest.course.dto.response.CourseResponse
+import org.example.msstest.course.entity.CourseType
+import org.example.msstest.course.openapi.CourseApi
+import org.example.msstest.course.service.CourseService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 

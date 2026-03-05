@@ -1,8 +1,8 @@
-package org.example.msstest.domain.vo.converter
+package org.example.msstest.course.vo.converter
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
-import org.example.msstest.domain.vo.Credits
+import org.example.msstest.course.vo.Credits
 
 @Converter(autoApply = false)
 class CreditsConverter : AttributeConverter<Credits, Int> {

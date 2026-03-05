@@ -1,4 +1,4 @@
-package org.example.msstest.domain.entity
+package org.example.msstest.course.entity
 
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -16,11 +16,11 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.persistence.Version
 import org.example.msstest.common.entity.BaseEntity
-import org.example.msstest.domain.vo.CourseCode
+import org.example.msstest.course.vo.CourseCode
+import org.example.msstest.course.vo.Credits
+import org.example.msstest.course.vo.converter.CourseCodeConverter
+import org.example.msstest.course.vo.converter.CreditsConverter
 import org.example.msstest.professor.entity.Professor
-import org.example.msstest.domain.vo.Credits
-import org.example.msstest.domain.vo.converter.CourseCodeConverter
-import org.example.msstest.domain.vo.converter.CreditsConverter
 
 @Entity
 @Table(name = "courses")

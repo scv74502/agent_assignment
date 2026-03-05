@@ -1,8 +1,8 @@
 package org.example.msstest.service
 
+import org.example.msstest.course.repository.CourseScheduleRepository
 import org.example.msstest.dto.response.TimetableEntry
 import org.example.msstest.dto.response.TimetableResponse
-import org.example.msstest.repository.CourseScheduleRepository
 import org.example.msstest.repository.EnrollmentRepository
 import org.example.msstest.student.exception.StudentException
 import org.example.msstest.student.service.StudentService

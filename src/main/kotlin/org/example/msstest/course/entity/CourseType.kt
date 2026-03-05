@@ -1,4 +1,4 @@
-package org.example.msstest.domain.entity
+package org.example.msstest.course.entity
 
 enum class CourseType(val displayName: String) {
     MAJOR_REQUIRED("전공필수"),

@@ -1,11 +1,11 @@
-package org.example.msstest.service
+package org.example.msstest.course.service
 
-import org.example.msstest.domain.entity.CourseType
-import org.example.msstest.dto.response.CourseResponse
 import org.example.msstest.common.dto.CursorPageResponse
-import org.example.msstest.exception.CourseException
-import org.example.msstest.repository.CourseRepository
-import org.example.msstest.repository.CourseSpecifications
+import org.example.msstest.course.dto.response.CourseResponse
+import org.example.msstest.course.entity.CourseType
+import org.example.msstest.course.exception.CourseException
+import org.example.msstest.course.repository.CourseRepository
+import org.example.msstest.course.repository.CourseSpecifications
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification

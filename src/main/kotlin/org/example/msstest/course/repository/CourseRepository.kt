@@ -1,7 +1,7 @@
-package org.example.msstest.repository
+package org.example.msstest.course.repository
 
 import jakarta.persistence.LockModeType
-import org.example.msstest.domain.entity.Course
+import org.example.msstest.course.entity.Course
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Lock

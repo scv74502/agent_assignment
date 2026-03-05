@@ -1,8 +1,8 @@
-package org.example.msstest.repository
+package org.example.msstest.course.repository
 
 import jakarta.persistence.criteria.JoinType
-import org.example.msstest.domain.entity.Course
-import org.example.msstest.domain.entity.CourseType
+import org.example.msstest.course.entity.Course
+import org.example.msstest.course.entity.CourseType
 import org.springframework.data.jpa.domain.Specification
 
 object CourseSpecifications {

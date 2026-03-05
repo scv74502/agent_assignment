@@ -1,6 +1,6 @@
-package org.example.msstest.repository
+package org.example.msstest.course.repository
 
-import org.example.msstest.domain.entity.CourseSchedule
+import org.example.msstest.course.entity.CourseSchedule
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

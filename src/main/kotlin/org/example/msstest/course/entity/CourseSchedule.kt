@@ -1,4 +1,4 @@
-package org.example.msstest.domain.entity
+package org.example.msstest.course.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

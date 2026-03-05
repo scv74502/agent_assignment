@@ -1,16 +1,16 @@
 package org.example.msstest.service
 
-import org.example.msstest.domain.entity.CourseSchedule
-import org.example.msstest.domain.entity.Enrollment
-import org.example.msstest.domain.entity.EnrollmentStatus
-import org.example.msstest.dto.response.EnrollmentResponse
-import org.example.msstest.exception.CourseException
-import org.example.msstest.exception.EnrollmentException
 import org.example.msstest.common.exception.LockException
 import org.example.msstest.common.lock.RedisLockService
 import org.example.msstest.common.queue.EnrollmentQueueService
-import org.example.msstest.repository.CourseRepository
-import org.example.msstest.repository.CourseScheduleRepository
+import org.example.msstest.course.entity.CourseSchedule
+import org.example.msstest.course.exception.CourseException
+import org.example.msstest.course.repository.CourseRepository
+import org.example.msstest.course.repository.CourseScheduleRepository
+import org.example.msstest.domain.entity.Enrollment
+import org.example.msstest.domain.entity.EnrollmentStatus
+import org.example.msstest.dto.response.EnrollmentResponse
+import org.example.msstest.exception.EnrollmentException
 import org.example.msstest.repository.EnrollmentRepository
 import org.example.msstest.student.exception.StudentException
 import org.example.msstest.student.service.StudentService

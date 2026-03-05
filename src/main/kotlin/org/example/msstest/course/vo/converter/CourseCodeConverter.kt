@@ -1,8 +1,8 @@
-package org.example.msstest.domain.vo.converter
+package org.example.msstest.course.vo.converter
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
-import org.example.msstest.domain.vo.CourseCode
+import org.example.msstest.course.vo.CourseCode
 
 @Converter(autoApply = false)
 class CourseCodeConverter : AttributeConverter<CourseCode, String> {

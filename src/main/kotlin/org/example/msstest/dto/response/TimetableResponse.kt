@@ -1,6 +1,6 @@
 package org.example.msstest.dto.response
 
-import org.example.msstest.domain.entity.CourseSchedule
+import org.example.msstest.course.entity.CourseSchedule
 import java.time.DayOfWeek
 import java.time.LocalTime
 

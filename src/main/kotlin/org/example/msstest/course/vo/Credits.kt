@@ -1,4 +1,4 @@
-package org.example.msstest.domain.vo
+package org.example.msstest.course.vo
 
 data class Credits(val value: Int) {
     init {
