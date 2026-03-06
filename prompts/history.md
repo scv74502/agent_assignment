@@ -293,3 +293,24 @@ src/main/kotlin/org/example/msstest/initializer/
 3. **EnrollmentServiceConcurrencyTest.kt**: 동일 학생 학점 초과 방지 동시성 테스트 추가 (학생 1명, 15학점 수강 중, 3학점 2과목 동시 신청 → 1건 성공/1건 실패 검증)
 
 **검증**: 67 tests 전체 통과 (기존 66 + 신규 1)
+
+---
+
+## 2026-03-06
+
+### 14:59 (UTC+9) - 하드코딩 값 상수 분리 및 Redis 설정 외부화 (잔여 작업)
+**요청**: 이전 세션에서 수행한 "하드코딩 값 상수 분리 및 Redis 설정 외부화" 작업의 잔여 4개 항목 완료 및 커밋
+
+**작업**:
+1. `EnrollmentQueueService.kt:37` - `Duration.ofHours(1)` → `Duration.ofHours(queueTtlHours)` 변경
+2. `.env.example` - `REDIS_LOCK_WAIT_TIME`, `REDIS_LOCK_LEASE_TIME`, `ENROLLMENT_QUEUE_TTL_HOURS` 섹션 추가
+3. `application.yml` - `redis.lock.wait-time`, `redis.lock.lease-time`, `enrollment.queue-ttl-hours` 환경변수 바인딩 추가
+4. `application-test.yml` - `redis.lock.wait-time: 5`, `redis.lock.lease-time: 10`, `enrollment.queue-ttl-hours: 1` 추가
+
+**검증**:
+- `./gradlew compileKotlin` - BUILD SUCCESSFUL
+- `./gradlew test` - BUILD SUCCESSFUL (ktlintCheck 태스크는 프로젝트에 미설정)
+
+**커밋**: `c2c0a3d [refactor] 하드코딩 값 상수 분리 및 Redis 설정 외부화`
+
+**참고**: 잔여 작업 확인 결과 이전 세션에서 이미 모든 변경이 커밋 완료된 상태였음
