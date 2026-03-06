@@ -16,6 +16,8 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.persistence.Version
 import org.example.msstest.common.entity.BaseEntity
+import org.example.msstest.common.exception.ErrorCode
+import org.example.msstest.course.constants.CourseConstants
 import org.example.msstest.course.vo.CourseCode
 import org.example.msstest.course.vo.Credits
 import org.example.msstest.course.vo.converter.CourseCodeConverter
@@ -59,12 +61,12 @@ class Course(
     fun isFull(): Boolean = currentEnrollment >= capacity
 
     fun incrementEnrollment() {
-        require(!isFull()) { "강좌 정원이 초과되었습니다" }
+        require(!isFull()) { ErrorCode.COURSE_FULL.message }
         currentEnrollment++
     }
 
     fun decrementEnrollment() {
-        require(currentEnrollment > 0) { "수강 인원이 0명입니다" }
+        require(currentEnrollment > 0) { CourseConstants.ENROLLMENT_ZERO_MESSAGE }
         currentEnrollment--
     }
 

@@ -6,5 +6,5 @@ sealed class LockException(
     override val cause: Throwable? = null,
 ) : RuntimeException(message, cause), DomainBusinessException {
     class AcquisitionFailed(resourceId: String) :
-        LockException(ErrorCode.LOCK_ACQUISITION_FAILED, "락 획득에 실패했습니다: $resourceId")
+        LockException(ErrorCode.LOCK_ACQUISITION_FAILED, "${ErrorCode.LOCK_ACQUISITION_FAILED.message}: $resourceId")
 }

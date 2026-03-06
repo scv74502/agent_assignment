@@ -2,19 +2,22 @@ package org.example.msstest.common.lock
 
 import org.redisson.api.RedissonClient
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
 @Service
 class RedisLockService(
     private val redissonClient: RedissonClient,
+    @Value("\${redis.lock.wait-time:5}") private val defaultWaitTime: Long,
+    @Value("\${redis.lock.lease-time:10}") private val defaultLeaseTime: Long,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     fun <T> executeWithLock(
         lockKey: String,
-        waitTime: Long = 5L,
-        leaseTime: Long = 10L,
+        waitTime: Long = defaultWaitTime,
+        leaseTime: Long = defaultLeaseTime,
         timeUnit: TimeUnit = TimeUnit.SECONDS,
         action: () -> T,
     ): T? {
@@ -44,8 +47,8 @@ class RedisLockService(
 
     fun tryLock(
         lockKey: String,
-        waitTime: Long = 5L,
-        leaseTime: Long = 10L,
+        waitTime: Long = defaultWaitTime,
+        leaseTime: Long = defaultLeaseTime,
         timeUnit: TimeUnit = TimeUnit.SECONDS,
     ): Boolean {
         val lock = redissonClient.getLock(lockKey)

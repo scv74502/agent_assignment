@@ -1,6 +1,7 @@
 package org.example.msstest.course.service
 
 import org.example.msstest.common.dto.CursorPageResponse
+import org.example.msstest.course.constants.CourseConstants
 import org.example.msstest.course.dto.response.CourseResponse
 import org.example.msstest.course.entity.CourseType
 import org.example.msstest.course.exception.CourseException
@@ -92,7 +93,7 @@ class CourseService(
 
     private fun validatePageSize(size: Int?): Int {
         val pageSize = size ?: DEFAULT_PAGE_SIZE
-        require(pageSize in 1..MAX_PAGE_SIZE) { "페이지 크기는 1~$MAX_PAGE_SIZE 사이여야 합니다" }
+        require(pageSize in 1..MAX_PAGE_SIZE) { CourseConstants.INVALID_PAGE_SIZE_MESSAGE.format(MAX_PAGE_SIZE) }
         return pageSize
     }
 

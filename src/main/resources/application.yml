@@ -8,6 +8,12 @@ jwt:
   secret: ${JWT_SECRET:default-secret-key-for-development-only-32chars}
   expiration-ms: ${JWT_EXPIRATION_MS:3600000}
 
+redis:
+  lock:
+    wait-time: ${REDIS_LOCK_WAIT_TIME:5}
+    lease-time: ${REDIS_LOCK_LEASE_TIME:10}
+
 enrollment:
   max-credits: 18
   queue-multiplier: 100
+  queue-ttl-hours: ${ENROLLMENT_QUEUE_TTL_HOURS:1}

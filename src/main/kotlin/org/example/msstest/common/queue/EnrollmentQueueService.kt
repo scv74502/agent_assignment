@@ -11,6 +11,7 @@ import java.util.UUID
 class EnrollmentQueueService(
     private val redisTemplate: RedisTemplate<String, Any>,
     @Value("\${enrollment.queue-multiplier:100}") private val queueMultiplier: Int,
+    @Value("\${enrollment.queue-ttl-hours:1}") private val queueTtlHours: Long,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -33,7 +34,7 @@ class EnrollmentQueueService(
         val member = "$studentId:$token"
 
         redisTemplate.opsForZSet().add(queueKey, member, score)
-        redisTemplate.expire(queueKey, Duration.ofHours(1))
+        redisTemplate.expire(queueKey, Duration.ofHours(queueTtlHours))
 
         val position = redisTemplate.opsForZSet().rank(queueKey, member) ?: 0
         logger.info("Student $studentId entered queue for course $courseId at position $position")

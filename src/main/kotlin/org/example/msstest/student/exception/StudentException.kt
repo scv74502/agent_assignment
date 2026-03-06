@@ -9,11 +9,11 @@ sealed class StudentException(
     override val cause: Throwable? = null,
 ) : RuntimeException(message, cause), DomainBusinessException {
     class NotFound(studentId: Long) :
-        StudentException(ErrorCode.STUDENT_NOT_FOUND, "학생을 찾을 수 없습니다: $studentId")
+        StudentException(ErrorCode.STUDENT_NOT_FOUND, "${ErrorCode.STUDENT_NOT_FOUND.message}: $studentId")
 
     class NotFoundByNo(studentNo: String) :
-        StudentException(ErrorCode.STUDENT_NOT_FOUND, "학생을 찾을 수 없습니다: $studentNo")
+        StudentException(ErrorCode.STUDENT_NOT_FOUND, "${ErrorCode.STUDENT_NOT_FOUND.message}: $studentNo")
 
     class Duplicate(studentNo: String) :
-        StudentException(ErrorCode.DUPLICATE_STUDENT, "이미 존재하는 학번입니다: $studentNo")
+        StudentException(ErrorCode.DUPLICATE_STUDENT, "${ErrorCode.DUPLICATE_STUDENT.message}: $studentNo")
 }

@@ -12,6 +12,12 @@ jwt:
   secret: test-secret-key-for-testing-only-minimum-32chars
   expiration-ms: 3600000
 
+redis:
+  lock:
+    wait-time: 5
+    lease-time: 10
+
 enrollment:
   max-credits: 18
   queue-multiplier: 100
+  queue-ttl-hours: 1

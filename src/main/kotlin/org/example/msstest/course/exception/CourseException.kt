@@ -9,11 +9,11 @@ sealed class CourseException(
     override val cause: Throwable? = null,
 ) : RuntimeException(message, cause), DomainBusinessException {
     class NotFound(courseId: Long) :
-        CourseException(ErrorCode.COURSE_NOT_FOUND, "강좌를 찾을 수 없습니다: $courseId")
+        CourseException(ErrorCode.COURSE_NOT_FOUND, "${ErrorCode.COURSE_NOT_FOUND.message}: $courseId")
 
     class Full(courseId: Long) :
-        CourseException(ErrorCode.COURSE_FULL, "강좌 정원이 초과되었습니다: $courseId")
+        CourseException(ErrorCode.COURSE_FULL, "${ErrorCode.COURSE_FULL.message}: $courseId")
 
     class Duplicate(courseCode: String) :
-        CourseException(ErrorCode.DUPLICATE_COURSE, "이미 존재하는 과목코드입니다: $courseCode")
+        CourseException(ErrorCode.DUPLICATE_COURSE, "${ErrorCode.DUPLICATE_COURSE.message}: $courseCode")
 }

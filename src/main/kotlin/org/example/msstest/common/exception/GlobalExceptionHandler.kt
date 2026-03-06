@@ -1,5 +1,6 @@
 package org.example.msstest.common.exception
 
+import org.example.msstest.common.constants.ErrorMessages
 import org.example.msstest.common.dto.ErrorResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -39,7 +40,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun handleTypeMismatchException(e: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> {
-        val message = "잘못된 파라미터입니다: ${e.name}=${e.value}"
+        val message = "${ErrorMessages.INVALID_PARAMETER_PREFIX}${e.name}=${e.value}"
         logger.warn("TypeMismatchException: $message")
         return ResponseEntity
             .badRequest()
@@ -51,7 +52,7 @@ class GlobalExceptionHandler {
         logger.warn("IllegalArgumentException: ${e.message}")
         return ResponseEntity
             .badRequest()
-            .body(ErrorResponse.of(ErrorCode.INVALID_INPUT, e.message ?: "잘못된 입력입니다"))
+            .body(ErrorResponse.of(ErrorCode.INVALID_INPUT, e.message ?: ErrorCode.INVALID_INPUT.message))
     }
 
     @ExceptionHandler(Exception::class)

@@ -1,8 +1,10 @@
 package org.example.msstest.course.vo
 
+import org.example.msstest.course.constants.CourseConstants
+
 data class Credits(val value: Int) {
     init {
-        require(value in 1..6) { "학점은 1~6 사이여야 합니다: $value" }
+        require(value in 1..6) { "${CourseConstants.INVALID_CREDITS_MESSAGE}: $value" }
     }
 
     operator fun plus(other: Credits): Credits = Credits(this.value + other.value)

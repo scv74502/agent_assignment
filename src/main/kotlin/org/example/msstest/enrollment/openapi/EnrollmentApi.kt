@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.example.msstest.common.dto.ErrorResponse
+import org.example.msstest.enrollment.constants.EnrollmentConstants
 import org.example.msstest.enrollment.dto.request.CancelEnrollmentRequest
 import org.example.msstest.enrollment.dto.request.EnrollmentRequest
 import org.example.msstest.enrollment.dto.response.EnrollmentResponse
@@ -20,8 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
-@Tag(name = "Enrollment", description = "수강신청 API")
-@RequestMapping("/api/v1/enrollments")
+@Tag(name = EnrollmentConstants.TAG_NAME, description = EnrollmentConstants.TAG_DESCRIPTION)
+@RequestMapping(EnrollmentConstants.BASE_PATH)
 interface EnrollmentApi {
     @Operation(summary = "수강신청", description = "학생이 강좌에 수강신청합니다")
     @ApiResponses(
@@ -88,7 +89,7 @@ interface EnrollmentApi {
             ),
         ],
     )
-    @GetMapping("/students/{studentId}")
+    @GetMapping(EnrollmentConstants.PATH_STUDENTS_BY_ID)
     fun getEnrollmentsByStudent(
         @Parameter(description = "학생 ID") @PathVariable studentId: Long,
     ): ResponseEntity<List<EnrollmentResponse>>

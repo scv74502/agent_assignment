@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.example.msstest.common.dto.ErrorResponse
+import org.example.msstest.professor.constants.ProfessorConstants
 import org.example.msstest.professor.dto.response.ProfessorResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
-@Tag(name = "Professor", description = "교수 API")
-@RequestMapping("/api/v1/professors")
+@Tag(name = ProfessorConstants.TAG_NAME, description = ProfessorConstants.TAG_DESCRIPTION)
+@RequestMapping(ProfessorConstants.BASE_PATH)
 interface ProfessorApi {
     @Operation(summary = "전체 교수 조회", description = "모든 교수 목록을 조회합니다")
     @ApiResponse(
@@ -42,7 +43,7 @@ interface ProfessorApi {
             ),
         ],
     )
-    @GetMapping("/{professorId}")
+    @GetMapping(ProfessorConstants.PATH_PROFESSOR_ID)
     fun getProfessorById(
         @Parameter(description = "교수 ID") @PathVariable professorId: Long,
     ): ResponseEntity<ProfessorResponse>

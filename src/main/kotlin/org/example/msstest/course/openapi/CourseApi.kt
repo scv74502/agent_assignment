@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.example.msstest.common.dto.CursorPageResponse
 import org.example.msstest.common.dto.ErrorResponse
+import org.example.msstest.course.constants.CourseConstants
 import org.example.msstest.course.dto.response.CourseResponse
 import org.example.msstest.course.entity.CourseType
 import org.springframework.http.ResponseEntity
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
-@Tag(name = "Course", description = "강좌 API")
-@RequestMapping("/api/v1/courses")
+@Tag(name = CourseConstants.TAG_NAME, description = CourseConstants.TAG_DESCRIPTION)
+@RequestMapping(CourseConstants.BASE_PATH)
 interface CourseApi {
     @Operation(summary = "전체 강좌 조회", description = "커서 기반 페이지네이션으로 강좌 목록을 조회합니다")
     @ApiResponse(
@@ -42,7 +43,7 @@ interface CourseApi {
         responseCode = "200",
         description = "조회 성공",
     )
-    @GetMapping("/available")
+    @GetMapping(CourseConstants.PATH_AVAILABLE)
     fun getAvailableCourses(
         @Parameter(description = "커서 (이전 페이지의 마지막 강좌 ID)")
         @RequestParam(required = false) cursor: Long?,
@@ -69,7 +70,7 @@ interface CourseApi {
             ),
         ],
     )
-    @GetMapping("/{courseId}")
+    @GetMapping(CourseConstants.PATH_COURSE_ID)
     fun getCourseById(
         @Parameter(description = "강좌 ID") @PathVariable courseId: Long,
     ): ResponseEntity<CourseResponse>

@@ -6,8 +6,8 @@ sealed class QueueException(
     override val cause: Throwable? = null,
 ) : RuntimeException(message, cause), DomainBusinessException {
     class Full(resourceId: String) :
-        QueueException(ErrorCode.QUEUE_FULL, "대기열이 가득 찼습니다: $resourceId")
+        QueueException(ErrorCode.QUEUE_FULL, "${ErrorCode.QUEUE_FULL.message}: $resourceId")
 
     class Timeout(resourceId: String) :
-        QueueException(ErrorCode.QUEUE_TIMEOUT, "대기 시간이 초과되었습니다: $resourceId")
+        QueueException(ErrorCode.QUEUE_TIMEOUT, "${ErrorCode.QUEUE_TIMEOUT.message}: $resourceId")
 }

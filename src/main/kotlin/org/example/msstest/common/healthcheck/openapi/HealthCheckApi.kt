@@ -2,6 +2,7 @@ package org.example.msstest.common.healthcheck.openapi
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import org.example.msstest.common.constants.ApiPaths
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,6 +17,6 @@ interface HealthCheckApi {
         responseCode = "200",
         description = "서버가 성공적으로 구동되었습니다.",
     )
-    @GetMapping("/health")
+    @GetMapping(ApiPaths.HEALTH)
     fun health(): ResponseEntity<Void>
 }

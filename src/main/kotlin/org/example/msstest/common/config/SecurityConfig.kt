@@ -1,5 +1,6 @@
 package org.example.msstest.common.config
 
+import org.example.msstest.common.constants.ApiPaths
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -20,11 +21,11 @@ class SecurityConfig {
             .authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers(
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/swagger-resources/**",
-                        "/api/health/**",
-                        "/api/v1/**",
+                        ApiPaths.SWAGGER_UI,
+                        ApiPaths.API_DOCS,
+                        ApiPaths.SWAGGER_RESOURCES,
+                        ApiPaths.HEALTH_ALL,
+                        ApiPaths.API_V1_ALL,
                     ).permitAll()
                     .anyRequest().permitAll()
             }.build()
