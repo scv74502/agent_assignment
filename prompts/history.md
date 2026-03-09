@@ -314,3 +314,22 @@ src/main/kotlin/org/example/msstest/initializer/
 **커밋**: `c2c0a3d [refactor] 하드코딩 값 상수 분리 및 Redis 설정 외부화`
 
 **참고**: 잔여 작업 확인 결과 이전 세션에서 이미 모든 변경이 커밋 완료된 상태였음
+
+---
+
+### 16:40 (UTC+9) - TestContainer 최적화: BuildService + jdbc:tc: 전환
+**요청**: "TestContainer 최적화 계획 구현 — MySQL을 jdbc:tc: URL로, Redis를 Gradle BuildService로 전환하고, IDE fallback용 singleton 패턴 적용"
+
+**작업**:
+- **MySQL**: `IntegrationTestBase`에서 `MySQLContainer` 수동 생성 제거, `application-test.yml`에 `jdbc:tc:mysql:8.0:///mss_test` + `ContainerDatabaseDriver` 설정으로 자동 관리 위임
+- **Redis**: Gradle `BuildService`(`buildSrc/TestContainerService.kt`)로 수명주기 관리, IDE 직접 실행 시 `TestContainerSingletons` singleton fallback
+- **IntegrationTestBase**: `@Testcontainers` 제거, `ContainerConfig` constructor 파라미터 + `resolveContainerConfig()` (system property → BuildService 경로, 없으면 → singleton fallback)
+- **build.gradle.kts**: `TestContainerService` BuildService 등록, `tasks.withType<Test>`에서 Redis host/port를 `systemProperty`로 주입, `cleanTestContainers` 태스크 제거 (BuildService가 자동 정리), `testcontainers:jdbc` 의존성 추가
+
+**신규 생성 파일**:
+- `buildSrc/build.gradle.kts` — BuildService용 빌드 설정
+- `buildSrc/src/main/kotlin/TestContainerService.kt` — Redis 컨테이너를 BuildService로 관리
+- `src/test/kotlin/org/example/msstest/ContainerConfig.kt` — Redis 접속 정보 VO
+- `src/test/kotlin/org/example/msstest/TestContainerSingletons.kt` — IDE fallback용 Redis singleton
+
+**검증**: `./gradlew test` — BUILD SUCCESSFUL (전체 테스트 통과)

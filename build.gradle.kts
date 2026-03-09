@@ -59,6 +59,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:1.21.4")
     testImplementation("org.testcontainers:junit-jupiter:1.21.4")
     testImplementation("org.testcontainers:mysql:1.21.4")
+    testImplementation("org.testcontainers:jdbc:1.21.4")
     testImplementation("com.redis:testcontainers-redis:2.2.2")
 }
 
@@ -74,27 +75,22 @@ allOpen {
     annotation("jakarta.persistence.Embeddable")
 }
 
+val testContainerService =
+    gradle.sharedServices.registerIfAbsent("testContainers", TestContainerService::class) {
+        maxParallelUsages.set(1)
+    }
+
 tasks.withType<Test> {
     useJUnitPlatform()
-}
-
-tasks.register<Exec>("cleanTestContainers") {
-    description = "TestContainers reusable 컨테이너를 정리합니다"
-    group = "verification"
-    commandLine("docker", "rm", "-f")
+    usesService(testContainerService)
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = false
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.SHORT
+    }
     doFirst {
-        val containerIds =
-            Runtime
-                .getRuntime()
-                .exec(arrayOf("docker", "ps", "-aq", "--filter", "label=org.testcontainers=true"))
-                .inputStream
-                .bufferedReader()
-                .readText()
-                .trim()
-        if (containerIds.isBlank()) {
-            logger.lifecycle("정리할 TestContainers 컨테이너가 없습니다.")
-            throw StopExecutionException()
-        }
-        commandLine("docker", "rm", "-f", *containerIds.split("\n").toTypedArray())
+        val service = testContainerService.get()
+        systemProperty("tc.redis.host", service.redisContainer.host)
+        systemProperty("tc.redis.port", service.redisContainer.firstMappedPort)
     }
 }
