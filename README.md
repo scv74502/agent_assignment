@@ -13,6 +13,51 @@
 | Database | MySQL | 8.0 |
 | Cache/Lock | Redis | 7.0 |
 | API Docs | SpringDoc OpenAPI | - |
+| Test Infra Configuration | TestContainers | 1.21.4 |
+
+## 프로젝트 구조
+
+도메인 기반 패키지 구조를 사용합니다.
+
+```
+src/main/kotlin/org/example/msstest/
+├── common/       # 공통 모듈 (설정, DTO, 예외, 락, 대기열)
+├── course/       # 강좌 도메인
+├── enrollment/   # 수강신청 도메인
+├── student/      # 학생 도메인
+└── professor/    # 교수 도메인
+```
+
+각 도메인은 `controller/`, `service/`, `repository/`, `entity/`, `dto/` 계층으로 구성됩니다.
+
+## 동시성 제어
+
+수강신청/취소 시 동시 요청에 대한 데이터 정합성을 다층 락 전략으로 보장합니다.
+
+### 정합성이 요구되는 API
+
+| API | 엔드포인트 | 주요 위험 |
+|-----|-----------|----------|
+| 수강신청 | `POST /api/v1/enrollments` | 정원 초과, 학점 초과, 중복 신청 |
+| 수강취소 | `DELETE /api/v1/enrollments` | 정원 카운트 불일치 |
+
+### 적용 기술
+
+| 계층 | 방식 | 적용 대상 | 역할 |
+|------|------|----------|------|
+| 분산 락 | Redisson (`enrollment:lock:student:{studentId}`) | 수강신청, 수강취소 | 동일 학생의 동시 요청 직렬화 |
+| DB 락 | 비관적 락 (`PESSIMISTIC_WRITE`) | 수강신청, 수강취소 | 강좌 정원 변경 시 동시 접근 차단 |
+| 낙관적 락 | JPA `@Version` | 수강신청, 수강취소 | 동시 업데이트 충돌 최종 감지 |
+
+### 수강신청 처리 흐름
+
+1. **사전 검증** (락 밖) — 학생/강좌 존재, 중복 신청 확인
+2. **분산 락 획득** — Redisson 학생별 락 (wait 5s, lease 10s)
+3. **트랜잭션 내 처리** (락 안)
+   - 중복 신청 재확인 (이중 검증)
+   - 비관적 락으로 강좌 조회
+   - 학점 상한 검증 (18학점), 시간표 충돌 검증, 정원 확인
+   - 수강 처리 및 정원 증가
 
 ## 프로젝트 빌드 방법
 
@@ -73,7 +118,10 @@ app:
 
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
-| GET | `/api/v1/courses` | 강좌 목록 조회 |
+| GET | `/api/v1/courses` | 강좌 목록 조회 (커서 페이지네이션, 이수구분/학과 필터) |
+| GET | `/api/v1/courses/available` | 수강 가능 강좌 조회 |
+| GET | `/api/v1/courses/{courseId}` | 강좌 상세 조회 |
+| GET | `/api/v1/courses?professorId=` | 교수별 강좌 조회 |
 | GET | `/api/v1/students` | 학생 목록 조회 |
 | GET | `/api/v1/professors` | 교수 목록 조회 |
 | GET | `/api/v1/timetable/{studentId}` | 학생 시간표 조회 |
@@ -82,7 +130,11 @@ app:
 
 ### 예시
 ```bash
+# 강좌 목록 조회
 curl http://localhost:8080/api/v1/courses
+
+# 커서 기반 페이지네이션 + 이수구분 필터
+curl "http://localhost:8080/api/v1/courses?courseType=MAJOR_REQUIRED&size=10"
 ```
 
 ## 테스트 실행
@@ -97,6 +149,8 @@ curl http://localhost:8080/api/v1/courses
 # 통합 테스트만
 ./gradlew test --tests "*IntegrationTest"
 ```
+
+> 통합 테스트는 TestContainers를 사용하므로 Docker가 실행 중이어야 합니다.
 
 ## 참고
 
