@@ -9,6 +9,7 @@ import org.example.msstest.course.repository.CourseRepository
 import org.example.msstest.course.repository.CourseSpecifications
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.example.msstest.course.entity.Course
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -45,7 +46,8 @@ class CourseService(
     ): CursorPageResponse<CourseResponse> {
         val pageSize = validatePageSize(size)
         val spec =
-            Specification.where(CourseSpecifications.cursorAfter(cursor))
+            Specification.unrestricted<Course>()
+                .and(CourseSpecifications.cursorAfter(cursor))
                 .and(CourseSpecifications.departmentEquals(department))
                 .and(CourseSpecifications.courseTypeEquals(courseType))
                 .and(CourseSpecifications.fetchProfessor())
@@ -72,7 +74,8 @@ class CourseService(
     ): CursorPageResponse<CourseResponse> {
         val pageSize = validatePageSize(size)
         val spec =
-            Specification.where(CourseSpecifications.cursorAfter(cursor))
+            Specification.unrestricted<Course>()
+                .and(CourseSpecifications.cursorAfter(cursor))
                 .and(CourseSpecifications.isAvailable())
                 .and(CourseSpecifications.departmentEquals(department))
                 .and(CourseSpecifications.courseTypeEquals(courseType))
